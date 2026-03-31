@@ -1,26 +1,126 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* --------------------------
+   Wingit Design Tokens
+-------------------------- */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+:root {
+  /* base */
+  --background: #0A0A0A;
+  --surface: #111111;
+
+  /* text */
+  --foreground: #EDEDED;
+  --text-secondary: #9CA3AF;
+  --text-muted: #6B7280;
+
+  /* borders */
+  --border: #1F1F1F;
+
+  /* signals (IMPORTANT) */
+  --accent-red: #EF4444;
+  /* volatility */
+  --accent-amber: #F59E0B;
+  /* drift */
+  --accent-blue: #3B82F6;
+  /* stable */
+
+  /* typography */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* --------------------------
+   Base Styles
+-------------------------- */
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+
+  /* subtle rendering improvement */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* --------------------------
+   Selection (subtle system feel)
+-------------------------- */
+
+::selection {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* --------------------------
+   Scrollbar (minimal)
+-------------------------- */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1F1F1F;
+  border-radius: 4px;
+}
+
+/* --------------------------
+   Animations (system motion)
+-------------------------- */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* subtle pulse for high volatility */
+@keyframes pulseSoft {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* --------------------------
+   Utility Classes (optional)
+-------------------------- */
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out both;
+}
+
+.pulse-soft {
+  animation: pulseSoft 1.5s ease-in-out infinite;
+}
+
+/* --------------------------
+   Remove Light Mode (IMPORTANT)
+-------------------------- */
+
+/* You are NOT building a theme toggle app.
+   This is a system. Keep it consistent. */
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --background: #0A0A0A;
+    --foreground: #EDEDED;
+  }
 }

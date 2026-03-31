@@ -1,65 +1,291 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+
+type Entry = {
+  message: string;
+  volatility: number;
+};
+
+/* --------------------------
+   STATE ENGINE
+-------------------------- */
+function getState(v: number) {
+  if (v < 40) return "Interest";
+  if (v < 70) return "Uncertainty";
+  return "Withdrawal";
+}
+
+/* --------------------------
+   PREDICTION ENGINE
+-------------------------- */
+function predictNextState(timeline: Entry[]) {
+  if (timeline.length < 2) return null;
+
+  const last = timeline[timeline.length - 1].volatility;
+  const prev = timeline[timeline.length - 2].volatility;
+
+  const trend = last - prev;
+
+  if (trend > 15) return "Rapid escalation → high risk of withdrawal";
+  if (trend > 5) return "Gradual escalation → instability increasing";
+  if (trend < -10) return "Recovery → moving toward stability";
+
+  return "Stable but fragile";
+}
+
+/* --------------------------
+   PRESCRIPTIVE ENGINE
+-------------------------- */
+function getIntervention(state: string) {
+  if (state === "Withdrawal") {
+    return {
+      action: "Reduce pressure immediately",
+      suggestion: "Pause. Do not follow up.",
+      message: "Hey, no rush at all. Catch up whenever you're free."
+    };
+  }
+
+  if (state === "Uncertainty") {
+    return {
+      action: "Stabilize interaction",
+      suggestion: "Reduce ambiguity and emotional load",
+      message: "Just checking in—no pressure at all."
+    };
+  }
+
+  return {
+    action: "Maintain balance",
+    suggestion: "Avoid over-investing",
+    message: "Sounds good :)"
+  };
+}
 
 export default function Home() {
+  const [message, setMessage] = useState("");
+  const [result, setResult] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [timeline, setTimeline] = useState<Entry[]>([]);
+
+  const runAnalysis = async () => {
+    if (!message.trim()) return;
+
+    setLoading(true);
+
+    const res = await fetch("/api/analyze", {
+      method: "POST",
+      body: JSON.stringify({ message }),
+    });
+
+    const data = await res.json();
+
+    setResult(data);
+
+    setTimeline((prev) => [
+      ...prev,
+      { message, volatility: data.volatilityScore },
+    ]);
+
+    setMessage("");
+    setLoading(false);
+  };
+
+  const currentState =
+    timeline.length > 0
+      ? getState(timeline[timeline.length - 1].volatility)
+      : null;
+
+  const prediction = predictNextState(timeline);
+  const intervention = currentState ? getIntervention(currentState) : null;
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="bg-[#0A0A0A] text-[#EDEDED] min-h-screen relative px-6">
+
+      {/* Ambient */}
+      <div className="fixed inset-0 pointer-events-none opacity-[0.03]">
+        <div className="w-full h-full bg-[radial-gradient(circle_at_center,white,transparent_70%)]" />
+      </div>
+
+      {/* HERO */}
+      <section className="min-h-screen flex items-center">
+        <div className="max-w-3xl mx-auto space-y-8 animate-[fadeIn_0.8s_ease-out]">
+          <div className="text-xs uppercase tracking-widest text-neutral-500">
+            Interaction Intelligence System
+          </div>
+
+          <h1 className="text-4xl md:text-5xl font-medium tracking-tight">
+            Wingit maps how meaning forms, distorts, and disappears in modern communication.
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+
+          <p className="text-sm text-neutral-400">
+            Observe interactions. Predict outcomes. Influence direction.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+          <button
+            onClick={() =>
+              document.getElementById("input")?.scrollIntoView({ behavior: "smooth" })
+            }
+            className="border border-neutral-700 px-4 py-2 text-sm hover:bg-neutral-900 transition"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            Run the interaction
+          </button>
         </div>
-      </main>
-    </div>
+      </section>
+
+      {/* INPUT */}
+      <section id="input" className="py-24 border-t border-neutral-900 max-w-3xl mx-auto">
+        <textarea
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          className="w-full bg-transparent border border-neutral-800 p-4 text-sm focus:outline-none focus:border-neutral-500 transition"
+          placeholder="Enter a real message..."
+          rows={3}
+        />
+
+        <button
+          onClick={runAnalysis}
+          className="mt-4 border border-neutral-700 px-4 py-2 text-sm hover:bg-neutral-900 transition"
+        >
+          {loading ? "Analyzing..." : "Run →"}
+        </button>
+      </section>
+
+      {/* OUTPUT */}
+      {result && (
+        <section className="py-24 border-t border-neutral-900 max-w-3xl mx-auto space-y-12">
+
+          {/* VOLATILITY */}
+          <div>
+            <div className="text-xs text-neutral-500 uppercase">Interaction Volatility</div>
+            <div className="text-sm mt-2">{result.volatilityScore}/100</div>
+
+            <div className="h-1 bg-neutral-800 mt-3">
+              <div
+                className="h-full bg-red-500 transition-all duration-1000"
+                style={{ width: `${result.volatilityScore}%` }}
+              />
+            </div>
+          </div>
+
+          {/* SIMULATION */}
+          <div>
+            <div className="text-xs text-neutral-500 uppercase">Simulated Response</div>
+            <div className="text-sm mt-2 text-neutral-300">
+              {result.simulatedReply}
+            </div>
+          </div>
+
+          {/* INTENT */}
+          <div>
+            <div className="text-xs text-neutral-500 uppercase">Intent Gap</div>
+            <div className="grid grid-cols-2 gap-6 mt-4 text-sm relative">
+              <div>
+                <div className="text-neutral-500">You meant</div>
+                <div>{result.intent.actual}</div>
+              </div>
+              <div>
+                <div className="text-neutral-500">They perceived</div>
+                <div>{result.intent.perceived}</div>
+              </div>
+              <div className="absolute left-1/2 top-0 bottom-0 w-px bg-neutral-800" />
+            </div>
+          </div>
+
+        </section>
+      )}
+
+      {/* STATE ENGINE */}
+      {currentState && (
+        <section className="py-24 border-t border-neutral-900 max-w-3xl mx-auto">
+          <div className="space-y-6">
+
+            <div className="text-xs uppercase text-neutral-500">
+              Interaction State
+            </div>
+
+            <div className="relative flex justify-between">
+              <div className="absolute w-full h-px bg-neutral-800 top-1/2" />
+
+              {["Interest", "Uncertainty", "Withdrawal"].map((s) => {
+                const active = s === currentState;
+
+                return (
+                  <div key={s} className="relative z-10 flex flex-col items-center">
+                    <div
+                      className={`w-3 h-3 rounded-full ${active
+                          ? "bg-red-500 animate-[pulseSoft_1.5s_ease-in-out_infinite]"
+                          : "bg-neutral-700"
+                        }`}
+                    />
+                    <div className="text-xs mt-2 text-neutral-400">{s}</div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="text-sm text-neutral-300">
+              Current state: {currentState}
+            </div>
+
+          </div>
+        </section>
+      )}
+
+      {/* PREDICTION */}
+      {prediction && (
+        <section className="py-24 border-t border-neutral-900 max-w-3xl mx-auto">
+          <div className="space-y-4">
+            <div className="text-xs uppercase text-neutral-500">Prediction</div>
+            <div className="text-sm text-neutral-300">{prediction}</div>
+          </div>
+        </section>
+      )}
+
+      {/* PRESCRIPTIVE */}
+      {intervention && (
+        <section className="py-24 border-t border-neutral-900 max-w-3xl mx-auto space-y-6">
+          <div className="text-xs uppercase text-neutral-500">
+            Recommended Intervention
+          </div>
+
+          <div className="text-sm">{intervention.action}</div>
+          <div className="text-xs text-neutral-500">{intervention.suggestion}</div>
+
+          <div className="border border-neutral-800 p-4 text-sm bg-neutral-900/40">
+            {intervention.message}
+          </div>
+        </section>
+      )}
+
+      {/* TIMELINE */}
+      {timeline.length > 0 && (
+        <section className="py-32 border-t border-neutral-900 max-w-3xl mx-auto space-y-6">
+          <div className="text-xs uppercase text-neutral-500">
+            Interaction Timeline
+          </div>
+
+          {timeline.map((t, i) => (
+            <div key={i} className="border-l border-neutral-800 pl-6 relative">
+              <div className="absolute left-[-5px] top-2 w-2 h-2 bg-neutral-400 rounded-full" />
+
+              <div className="text-sm">{t.message}</div>
+
+              <div className="h-[2px] bg-neutral-800 mt-2">
+                <div
+                  className="h-full bg-red-500"
+                  style={{ width: `${t.volatility}%` }}
+                />
+              </div>
+            </div>
+          ))}
+        </section>
+      )}
+
+      {/* FOOTER */}
+      <footer className="py-12 border-t border-neutral-900 text-center text-xs text-neutral-500">
+        Wingit — interaction intelligence system
+      </footer>
+
+    </main>
   );
 }
