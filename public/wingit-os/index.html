@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Wingit OS</title>
+
+<style>
+/* ====== GLOBAL ====== */
+html, body { height: 100%; margin: 0; }
+body {
+  font-family: "MS Sans Serif", Tahoma, sans-serif;
+  background: #008080;
+  color: #000;
+  overflow: hidden;
+}
+.hidden { display: none !important; }
+
+* {
+  box-sizing: border-box;
+  user-select: none;
+}
+
+input, textarea, pre {
+  user-select: text;
+}
+
+/* ====== BOOT ====== */
+#boot {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  color: #00ff66;
+  font-family: monospace;
+  padding: 20px;
+  line-height: 1.6;
+  z-index: 1000;
+}
+#boot .line { opacity: 0; }
+
+/* ====== DESKTOP ====== */
+#desktop {
+  position: fixed;
+  inset: 0;
+  display: none;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.09), transparent 18%),
+    radial-gradient(circle at 80% 70%, rgba(255,255,255,0.06), transparent 20%),
+    linear-gradient(180deg, #078c8c 0%, #008080 50%, #006c6c 100%);
+}
+
+#desktop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+.desktop-icons {
+  position: absolute;
+  top: 12px;
+  left: 10px;
+  display: grid;
+  grid-auto-flow: row;
+  gap: 8px;
+  z-index: 2;
+}
+
+.icon {
+  width: 84px;
+  padding: 6px 4px;
+  text-align: center;
+  color: #fff;
+  font-size: 12px;
+  cursor: default;
+  border: 1px solid transparent;
+}
+.icon.selected {
+  background: rgba(0, 0, 128, 0.35);
+  border: 1px dotted #fff;
+}
+.icon img {
+  width: 48px;
+  height: 48px;
+  display: block;
+  margin: 0 auto 4px;
+  border: 2px solid #000;
+  background: linear-gradient(180deg, #fff, #c0c0c0);
+  box-shadow: inset -2px -2px #808080, inset 2px 2px #fff;
+}
+.icon-label { line-height: 1.2; }
+
+/* ====== WINDOW ====== */
+.window {
+  position: absolute;
+  width: 360px;
+  min-width: 280px;
+  min-height: 180px;
+  background: #c0c0c0;
+  border: 2px solid #000;
+  box-shadow:
+    inset -2px -2px #fff,
+    inset 2px 2px #808080;
+  resize: none;
+  overflow: hidden;
+  touch-action: none;
+}
+
+.window.active .title-bar {
+  background: #000080;
+}
+
+.window.inactive .title-bar {
+  background: #808080;
+}
+
+.title-bar {
+  color: #fff;
+  padding: 4px 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: move;
+  user-select: none;
+  font-weight: bold;
+  touch-action: none;
+  -webkit-touch-callout: none;
+}
+
+.title-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.title-left img {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #000;
+  background: #c0c0c0;
+}
+
+.title-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+.title-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.tb {
+  width: 16px;
+  height: 16px;
+  background: #c0c0c0;
+  border: 2px solid #000;
+  box-shadow: inset -2px -2px #fff, inset 2px 2px #808080;
+  position: relative;
+  flex: none;
+}
+
+.tb.min::after {
+  content: "";
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  bottom: 3px;
+  height: 2px;
+  background: #000;
+}
+
+.tb.max::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border: 2px solid #000;
+}
+
+.tb.close::before,
+.tb.close::after {
+  content: "";
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  top: 7px;
+  height: 2px;
+  background: #000;
+  transform: rotate(45deg);
+}
+.tb.close::after {
+  transform: rotate(-45deg);
+}
+
+.content {
+  padding: 10px;
+  height: calc(100% - 24px);
+  overflow: auto;
+  background: #c0c0c0;
+}
+
+.menu-bar {
+  display: flex;
+  gap: 16px;
+  padding: 2px 0 8px;
+  font-size: 12px;
+}
+.menu-bar span {
+  text-decoration: underline;
+}
+
+.window-body {
+  background: #fff;
+  border: 2px solid #000;
+  box-shadow: inset -2px -2px #fff, inset 2px 2px #808080;
+  padding: 8px;
+}
+
+.window-body p {
+  margin: 0 0 8px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.window-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.status-box {
+  background: #000;
+  color: #00ff66;
+  font-family: monospace;
+  padding: 8px;
+  border: 2px solid #000;
+  min-height: 80px;
+  white-space: pre-wrap;
+}
+
+.chat {
+  height: 140px;
+  overflow: auto;
+  background: #fff;
+  border: 2px solid #000;
+  padding: 5px;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+input[type="text"],
+input[type="email"] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 4px 5px;
+  border: 2px solid #000;
+  background: #fff;
+  outline: none;
+}
+
+textarea {
+  width: 100%;
+  min-height: 78px;
+  border: 2px solid #000;
+  background: #fff;
+  padding: 4px 5px;
+  resize: none;
+  outline: none;
+}
+
+/* ====== BUTTON ====== */
+.button {
+  display: inline-block;
+  padding: 4px 10px;
+  margin-top: 6px;
+  background: #c0c0c0;
+  border: 2px solid #000;
+  box-shadow: inset -2px -2px #fff, inset 2px 2px #808080;
+  cursor: pointer;
+  font-size: 12px;
+}
+.button:active {
+  box-shadow: inset 2px 2px #fff, inset -2px -2px #808080;
+}
+
+.button-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ====== TASKBAR ====== */
+.taskbar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 34px;
+  background: #c0c0c0;
+  border-top: 2px solid #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 6px;
+  z-index: 50;
+}
+
+.start {
+  padding: 4px 10px;
+  border: 2px solid #000;
+  background: #c0c0c0;
+  box-shadow: inset -2px -2px #fff, inset 2px 2px #808080;
+  font-weight: bold;
+  cursor: pointer;
+  position: relative;
+  padding-left: 26px;
+}
+
+.start::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 6px;
+  width: 10px;
+  height: 10px;
+  background: linear-gradient(90deg, red 0 50%, green 50% 100%);
+  box-shadow: 0 0 0 1px #000;
+}
+
+.taskbar-windows {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+  overflow: auto;
+}
+
+.taskbar-btn {
+  max-width: 180px;
+  padding: 4px 10px;
+  border: 2px solid #000;
+  background: #c0c0c0;
+  box-shadow: inset -2px -2px #fff, inset 2px 2px #808080;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.taskbar-btn.active {
+  box-shadow: inset 2px 2px #fff, inset -2px -2px #808080;
+  background: #d8d8d8;
+}
+
+.clock {
+  padding: 4px 8px;
+  border: 2px solid #808080;
+  box-shadow: inset 1px 1px #fff, inset -1px -1px #000;
+  background: #c0c0c0;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* ====== NOTIFICATIONS ====== */
+.toast {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  background: #c0c0c0;
+  border: 2px solid #000;
+  padding: 6px 10px;
+  font-size: 12px;
+  box-shadow: inset -2px -2px #fff, inset 2px 2px #808080;
+  z-index: 200;
+}
+
+/* ====== START MENU ====== */
+.start-menu {
+  position: absolute;
+  left: 6px;
+  bottom: 36px;
+  width: 240px;
+  background: #c0c0c0;
+  border: 2px solid #000;
+  box-shadow: inset -2px -2px #fff, inset 2px 2px #808080;
+  z-index: 120;
+}
+.start-menu.hidden { display: none; }
+.start-menu .banner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 34px;
+  background: linear-gradient(180deg, #000080, #0000aa);
+}
+.start-menu .banner span {
+  position: absolute;
+  left: 4px;
+  bottom: 14px;
+  color: #fff;
+  font-weight: bold;
+  transform: rotate(-90deg);
+  transform-origin: left bottom;
+  font-size: 18px;
+  letter-spacing: 1px;
+}
+.start-menu .items {
+  margin-left: 34px;
+  padding: 6px 0;
+}
+.start-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.start-item:hover {
+  background: #000080;
+  color: #fff;
+}
+.start-item .mini-icon {
+  width: 18px;
+  height: 18px;
+  border: 1px solid #000;
+  background: #e0e0e0;
+  box-shadow: inset -1px -1px #808080, inset 1px 1px #fff;
+  flex: none;
+}
+
+/* ====== RESIZE HANDLE ====== */
+.resize-handle {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  right: 0;
+  bottom: 0;
+  cursor: nwse-resize;
+  touch-action: none;
+  background:
+    linear-gradient(135deg, transparent 0 45%, #808080 45% 55%, transparent 55% 100%),
+    linear-gradient(135deg, transparent 0 65%, #fff 65% 75%, transparent 75% 100%);
+}
+</style>
+</head>
+
+<body>
+
+<!-- ===== BOOT SCREEN ===== -->
+<div id="boot">
+  <div class="line">Wingit OS v0.1</div>
+  <div class="line">Initializing emotional context...</div>
+  <div class="line">Loading relational patterns...</div>
+  <div class="line">System ready.</div>
+</div>
+
+<!-- ===== DESKTOP ===== -->
+<div id="desktop">
+
+  <!-- ICONS -->
+  <div class="desktop-icons">
+    <div class="icon" data-icon="chat" data-scenario="dating" ondblclick="openScenario('dating')" onclick="selectIcon(this)">
+      <img src="" alt="" />
+      <div class="icon-label">dating_chat.exe</div>
+    </div>
+
+    <div class="icon" data-icon="conflict" data-scenario="conflict" ondblclick="openScenario('conflict')" onclick="selectIcon(this)">
+      <img src="" alt="" />
+      <div class="icon-label">couple_conflict.exe</div>
+    </div>
+
+    <div class="icon" data-icon="self" data-scenario="self" ondblclick="openScenario('self')" onclick="selectIcon(this)">
+      <img src="" alt="" />
+      <div class="icon-label">self_awareness.exe</div>
+    </div>
+
+    <div class="icon" data-icon="notes" ondblclick="openFounder()" onclick="selectIcon(this)">
+      <img src="" alt="" />
+      <div class="icon-label">founder_notes.txt</div>
+    </div>
+
+    <div class="icon" data-icon="request" ondblclick="openWaitlist()" onclick="selectIcon(this)">
+      <img src="" alt="" />
+      <div class="icon-label">access_request.exe</div>
+    </div>
+
+    <div class="icon" data-icon="mail" ondblclick="openMail()" onclick="selectIcon(this)">
+      <img src="" alt="" />
+      <div class="icon-label">wingit_mail.exe</div>
+    </div>
+  </div>
+
+  <!-- START MENU -->
+  <div id="startMenu" class="start-menu hidden">
+    <div class="banner"><span>Wingit</span></div>
+    <div class="items">
+      <div class="start-item" onclick="toggleStartMenu(false); openScenario('dating')"><div class="mini-icon"></div>Dating Chat</div>
+      <div class="start-item" onclick="toggleStartMenu(false); openScenario('conflict')"><div class="mini-icon"></div>Couple Conflict</div>
+      <div class="start-item" onclick="toggleStartMenu(false); openScenario('self')"><div class="mini-icon"></div>Self Awareness</div>
+      <div class="start-item" onclick="toggleStartMenu(false); openMail()"><div class="mini-icon"></div>Wingit Mail</div>
+      <div class="start-item" onclick="toggleStartMenu(false); openFounder()"><div class="mini-icon"></div>Founder Notes</div>
+      <div class="start-item" onclick="toggleStartMenu(false); openAboutFounder()"><div class="mini-icon"></div>About Founder</div>
+      <div class="start-item" onclick="toggleStartMenu(false); openWaitlist()"><div class="mini-icon"></div>Request Access</div>
+      <div class="start-item" onclick="toggleStartMenu(false); notify('Shutting down Wingit OS...')"><div class="mini-icon"></div>Shut Down</div>
+    </div>
+  </div>
+
+  <!-- TASKBAR -->
+  <div class="taskbar">
+    <div class="start" id="startButton">Start</div>
+    <div class="taskbar-windows" id="taskbarWindows"></div>
+    <div class="clock" id="clock">12:00 PM</div>
+  </div>
+</div>
+
+<script>
+const ICONS = {
+  chat: 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" shape-rendering="crispEdges">
+      <rect width="48" height="48" fill="#c0c0c0"/>
+      <rect x="1" y="1" width="46" height="46" fill="none" stroke="#000" stroke-width="2"/>
+      <rect x="6" y="6" width="36" height="36" fill="#e6f0ff"/>
+      <rect x="8" y="8" width="32" height="4" fill="#000080"/>
+      <rect x="10" y="16" width="20" height="16" fill="#ffffff"/>
+      <rect x="12" y="18" width="16" height="2" fill="#00ff66"/>
+      <rect x="12" y="22" width="14" height="2" fill="#00ff66"/>
+      <rect x="12" y="26" width="10" height="2" fill="#00ff66"/>
+      <rect x="30" y="20" width="6" height="6" fill="#ff4fd8"/>
+      <rect x="28" y="26" width="6" height="4" fill="#ff4fd8"/>
+    </svg>`),
+  conflict: 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" shape-rendering="crispEdges">
+      <rect width="48" height="48" fill="#c0c0c0"/>
+      <rect x="1" y="1" width="46" height="46" fill="none" stroke="#000" stroke-width="2"/>
+      <rect x="6" y="6" width="36" height="36" fill="#fff7e6"/>
+      <rect x="8" y="8" width="32" height="4" fill="#800000"/>
+      <rect x="12" y="16" width="10" height="10" fill="#ff4fd8"/>
+      <rect x="20" y="16" width="10" height="10" fill="#00e5ff"/>
+      <rect x="14" y="18" width="6" height="2" fill="#000"/>
+      <rect x="22" y="18" width="6" height="2" fill="#000"/>
+      <rect x="16" y="22" width="16" height="4" fill="#000"/>
+      <rect x="18" y="28" width="12" height="6" fill="#808080"/>
+    </svg>`),
+  self: 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" shape-rendering="crispEdges">
+      <rect width="48" height="48" fill="#c0c0c0"/>
+      <rect x="1" y="1" width="46" height="46" fill="none" stroke="#000" stroke-width="2"/>
+      <rect x="6" y="6" width="36" height="36" fill="#eef7ff"/>
+      <rect x="8" y="8" width="32" height="4" fill="#008080"/>
+      <rect x="17" y="14" width="14" height="14" rx="0" fill="#fff"/>
+      <rect x="19" y="16" width="10" height="2" fill="#8c7cff"/>
+      <rect x="19" y="20" width="10" height="2" fill="#8c7cff"/>
+      <rect x="19" y="24" width="10" height="2" fill="#8c7cff"/>
+      <rect x="14" y="30" width="20" height="4" fill="#00ff66"/>
+      <rect x="18" y="34" width="12" height="2" fill="#000"/>
+    </svg>`),
+  notes: 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" shape-rendering="crispEdges">
+      <rect width="48" height="48" fill="#c0c0c0"/>
+      <rect x="1" y="1" width="46" height="46" fill="none" stroke="#000" stroke-width="2"/>
+      <rect x="8" y="6" width="28" height="36" fill="#fff"/>
+      <rect x="10" y="8" width="24" height="4" fill="#000080"/>
+      <rect x="12" y="16" width="20" height="2" fill="#000"/>
+      <rect x="12" y="20" width="18" height="2" fill="#000"/>
+      <rect x="12" y="24" width="16" height="2" fill="#000"/>
+      <rect x="12" y="28" width="14" height="2" fill="#000"/>
+      <rect x="22" y="14" width="12" height="20" fill="#ff4fd8"/>
+      <rect x="24" y="16" width="8" height="2" fill="#fff"/>
+      <rect x="24" y="20" width="8" height="2" fill="#fff"/>
+    </svg>`),
+  request: 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" shape-rendering="crispEdges">
+      <rect width="48" height="48" fill="#c0c0c0"/>
+      <rect x="1" y="1" width="46" height="46" fill="none" stroke="#000" stroke-width="2"/>
+      <rect x="6" y="6" width="36" height="36" fill="#f0f0f0"/>
+      <rect x="8" y="8" width="32" height="4" fill="#000080"/>
+      <rect x="12" y="18" width="24" height="14" fill="#fff"/>
+      <rect x="14" y="20" width="20" height="2" fill="#00e5ff"/>
+      <rect x="14" y="24" width="12" height="2" fill="#00e5ff"/>
+      <rect x="14" y="28" width="16" height="2" fill="#00e5ff"/>
+      <rect x="24" y="14" width="10" height="10" fill="#8c7cff"/>
+      <rect x="28" y="18" width="2" height="2" fill="#fff"/>
+    </svg>`),
+  mail: 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" shape-rendering="crispEdges">
+      <rect width="48" height="48" fill="#c0c0c0"/>
+      <rect x="1" y="1" width="46" height="46" fill="none" stroke="#000" stroke-width="2"/>
+      <rect x="6" y="6" width="36" height="36" fill="#eef7ff"/>
+      <rect x="8" y="8" width="32" height="4" fill="#000080"/>
+      <rect x="10" y="14" width="28" height="20" fill="#fff"/>
+      <rect x="12" y="16" width="24" height="2" fill="#ff4fd8"/>
+      <rect x="12" y="18" width="2" height="2" fill="#ff4fd8"/>
+      <rect x="14" y="20" width="20" height="2" fill="#000"/>
+      <rect x="14" y="24" width="20" height="2" fill="#000"/>
+      <rect x="14" y="28" width="20" height="2" fill="#000"/>
+      <rect x="14" y="20" width="10" height="8" fill="#00e5ff"/>
+      <rect x="24" y="20" width="10" height="8" fill="#8c7cff"/>
+    </svg>`),
+};
+
+const WINDOW_ICON = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges">
+    <rect width="16" height="16" fill="#c0c0c0"/>
+    <rect x="1" y="1" width="14" height="14" fill="#fff" stroke="#000" stroke-width="1"/>
+    <rect x="2" y="2" width="12" height="3" fill="#000080"/>
+    <rect x="4" y="7" width="8" height="5" fill="#00e5ff"/>
+    <rect x="5" y="8" width="6" height="1" fill="#fff"/>
+    <rect x="5" y="10" width="4" height="1" fill="#ff4fd8"/>
+  </svg>`);
+
+document.querySelectorAll(".desktop-icons .icon").forEach((icon) => {
+  const img = icon.querySelector("img");
+  const key = icon.dataset.icon;
+  if (img && ICONS[key]) {
+    img.src = ICONS[key];
+  }
+});
+
+/* ===== BOOT SEQUENCE ===== */
+const lines = document.querySelectorAll("#boot .line");
+let i = 0;
+function showLine() {
+  if (i < lines.length) {
+    lines[i].style.opacity = 1;
+    i++;
+    setTimeout(showLine, 600);
+  } else {
+    setTimeout(() => {
+      document.getElementById("boot").style.display = "none";
+      document.getElementById("desktop").style.display = "block";
+      updateClock();
+    }, 800);
+  }
+}
+showLine();
+
+/* ===== CLOCK ===== */
+function updateClock() {
+  const el = document.getElementById("clock");
+  const now = new Date();
+  let h = now.getHours();
+  const m = String(now.getMinutes()).padStart(2, "0");
+  const ampm = h >= 12 ? "PM" : "AM";
+  h = h % 12 || 12;
+  el.textContent = `${h}:${m} ${ampm}`;
+}
+setInterval(updateClock, 30000);
+updateClock();
+
+/* ===== WINDOW SYSTEM ===== */
+let z = 10;
+let activeWindow = null;
+let windowCount = 0;
+const openWindows = new Map();
+
+function desktopEl() {
+  return document.getElementById("desktop");
+}
+
+function taskbarEl() {
+  return document.getElementById("taskbarWindows");
+}
+
+function setActive(win) {
+  if (!win) return;
+  openWindows.forEach((w, id) => {
+    w.classList.toggle("active", w === win);
+    w.classList.toggle("inactive", w !== win);
+    const btn = document.querySelector(`[data-win-id="${id}"]`);
+    if (btn) btn.classList.toggle("active", w === win && !w.classList.contains("minimized"));
+  });
+  activeWindow = win;
+  win.style.zIndex = ++z;
+}
+
+function minimizeWindow(win) {
+  win.classList.add("minimized");
+  win.style.display = "none";
+  const btn = document.querySelector(`[data-win-id="${win.dataset.winId}"]`);
+  if (btn) btn.classList.remove("active");
+  if (activeWindow === win) activeWindow = null;
+}
+
+function restoreWindow(win) {
+  win.classList.remove("minimized");
+  win.style.display = "block";
+  setActive(win);
+}
+
+function toggleMaximize(win) {
+  const isMax = win.dataset.maximized === "true";
+  if (isMax) {
+    win.style.left = win.dataset.prevLeft || "120px";
+    win.style.top = win.dataset.prevTop || "80px";
+    win.style.width = win.dataset.prevWidth || "360px";
+    win.style.height = win.dataset.prevHeight || "auto";
+    win.dataset.maximized = "false";
+  } else {
+    win.dataset.prevLeft = win.style.left;
+    win.dataset.prevTop = win.style.top;
+    win.dataset.prevWidth = win.style.width;
+    win.dataset.prevHeight = win.style.height;
+    win.style.left = "0px";
+    win.style.top = "0px";
+    win.style.width = "100%";
+    win.style.height = "calc(100% - 34px)";
+    win.dataset.maximized = "true";
+  }
+  setActive(win);
+}
+
+function attachWindowInteractions(win) {
+  const titleBar = win.querySelector(".title-bar");
+  const resizeHandle = win.querySelector(".resize-handle");
+  const minBtn = win.querySelector(".tb.min");
+  const maxBtn = win.querySelector(".tb.max");
+  const closeBtn = win.querySelector(".tb.close");
+  let dragState = null;
+  let resizeState = null;
+  let activeTouchId = null;
+
+  function startDrag(clientX, clientY) {
+    if (win.dataset.maximized === "true") return;
+    setActive(win);
+    dragState = {
+      startX: clientX,
+      startY: clientY,
+      originLeft: parseInt(win.style.left, 10) || 0,
+      originTop: parseInt(win.style.top, 10) || 0,
+    };
+  }
+
+  function moveDrag(clientX, clientY) {
+    if (!dragState) return;
+    win.style.left = `${dragState.originLeft + clientX - dragState.startX}px`;
+    win.style.top = `${dragState.originTop + clientY - dragState.startY}px`;
+  }
+
+  function endDrag() {
+    dragState = null;
+  }
+
+  function startResize(clientX, clientY) {
+    if (win.dataset.maximized === "true") return;
+    setActive(win);
+    resizeState = {
+      startX: clientX,
+      startY: clientY,
+      startW: win.offsetWidth,
+      startH: win.offsetHeight,
+    };
+  }
+
+  function moveResize(clientX, clientY) {
+    if (!resizeState) return;
+    win.style.width = `${Math.max(280, resizeState.startW + clientX - resizeState.startX)}px`;
+    win.style.height = `${Math.max(180, resizeState.startH + clientY - resizeState.startY)}px`;
+  }
+
+  function endResize() {
+    resizeState = null;
+  }
+
+  function getTouchById(touches, id) {
+    for (const touch of touches) {
+      if (touch.identifier === id) return touch;
+    }
+    return null;
+  }
+
+  function handleTouchMove(e) {
+    const hasActiveDrag = !!dragState;
+    const hasActiveResize = !!resizeState;
+    if (!hasActiveDrag && !hasActiveResize) return;
+    if (e.touches.length === 0) return;
+
+    const touch =
+      activeTouchId == null
+        ? e.touches[0]
+        : getTouchById(e.touches, activeTouchId) || e.touches[0];
+
+    if (!touch) return;
+    e.preventDefault();
+    moveDrag(touch.clientX, touch.clientY);
+    moveResize(touch.clientX, touch.clientY);
+  }
+
+  function endTouch() {
+    endDrag();
+    endResize();
+    activeTouchId = null;
+  }
+
+  titleBar.addEventListener("pointerdown", (e) => {
+    if (e.target.closest(".tb")) return;
+    if (e.pointerType === "touch" || e.pointerType === "pen" || e.pointerType === "mouse") {
+      e.preventDefault();
+      startDrag(e.clientX, e.clientY);
+      if (e.pointerType === "touch") {
+        activeTouchId = e.pointerId;
+      }
+      if (titleBar.setPointerCapture) {
+        try { titleBar.setPointerCapture(e.pointerId); } catch (_) {}
+      }
+    }
+  });
+
+  titleBar.addEventListener("touchstart", (e) => {
+    if (e.target.closest(".tb")) return;
+    if (e.touches.length !== 1) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    activeTouchId = touch.identifier;
+    startDrag(touch.clientX, touch.clientY);
+  }, { passive: false });
+
+  document.addEventListener("touchmove", handleTouchMove, { passive: false });
+  document.addEventListener("touchend", endTouch);
+  document.addEventListener("touchcancel", endTouch);
+
+  document.addEventListener("pointermove", (e) => {
+    moveDrag(e.clientX, e.clientY);
+    moveResize(e.clientX, e.clientY);
+  });
+
+  document.addEventListener("pointerup", () => {
+    endDrag();
+    endResize();
+  });
+
+  document.addEventListener("pointercancel", () => {
+    endDrag();
+    endResize();
+  });
+
+  win.addEventListener("mousedown", () => setActive(win));
+  titleBar.addEventListener("dblclick", () => toggleMaximize(win));
+  minBtn.addEventListener("click", (e) => { e.stopPropagation(); minimizeWindow(win); });
+  maxBtn.addEventListener("click", (e) => { e.stopPropagation(); toggleMaximize(win); });
+  closeBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const id = win.dataset.winId;
+    const btn = document.querySelector(`[data-win-id="${id}"]`);
+    if (btn) btn.remove();
+    openWindows.delete(id);
+    win.remove();
+    if (activeWindow === win) activeWindow = null;
+  });
+
+  resizeHandle.addEventListener("pointerdown", (e) => {
+    e.stopPropagation();
+    if (win.dataset.maximized === "true") return;
+    if (e.pointerType === "touch" || e.pointerType === "pen" || e.pointerType === "mouse") {
+      e.preventDefault();
+      startResize(e.clientX, e.clientY);
+      if (e.pointerType === "touch") {
+        activeTouchId = e.pointerId;
+      }
+    }
+  });
+
+  resizeHandle.addEventListener("touchstart", (e) => {
+    if (e.touches.length !== 1) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    activeTouchId = touch.identifier;
+    startResize(touch.clientX, touch.clientY);
+  }, { passive: false });
+
+  // document-level touchmove handles both drag and resize once a gesture starts
+}
+
+function makeTaskbarButton(win, title) {
+  const btn = document.createElement("div");
+  btn.className = "taskbar-btn active";
+  btn.dataset.winId = win.dataset.winId;
+  btn.textContent = title;
+  btn.addEventListener("click", () => {
+    if (win.style.display === "none") {
+      restoreWindow(win);
+    } else if (activeWindow === win) {
+      minimizeWindow(win);
+    } else {
+      setActive(win);
+    }
+  });
+  taskbarEl().appendChild(btn);
+  return btn;
+}
+
+function createWindow(title, content, options = {}) {
+  const win = document.createElement("div");
+  const id = `win-${++windowCount}`;
+  win.className = "window active";
+  win.dataset.winId = id;
+  win.style.left = `${options.x ?? 120}px`;
+  win.style.top = `${options.y ?? 80}px`;
+  win.style.width = `${options.width ?? 360}px`;
+  win.style.height = `${options.height ?? 260}px`;
+  win.style.zIndex = ++z;
+
+  win.innerHTML = `
+    <div class="title-bar">
+      <div class="title-left">
+        <img src="${WINDOW_ICON}" alt="" />
+        <span class="title-text">${title}</span>
+      </div>
+      <div class="title-buttons">
+        <div class="tb min" title="Minimize"></div>
+        <div class="tb max" title="Maximize"></div>
+        <div class="tb close" title="Close"></div>
+      </div>
+    </div>
+    <div class="content">
+      ${content}
+    </div>
+    <div class="resize-handle" title="Resize"></div>
+  `;
+
+  desktopEl().appendChild(win);
+  const taskBtn = makeTaskbarButton(win, title);
+  win.dataset.taskbarId = id;
+  openWindows.set(id, win);
+  attachWindowInteractions(win);
+  setActive(win);
+
+  win.addEventListener("focusin", () => setActive(win));
+  win.addEventListener("mousedown", () => setActive(win));
+
+  return { win, taskBtn };
+}
+
+/* ===== START MENU ===== */
+const startButton = document.getElementById("startButton");
+const startMenu = document.getElementById("startMenu");
+
+function toggleStartMenu(force) {
+  const show = typeof force === "boolean" ? force : startMenu.classList.contains("hidden");
+  startMenu.classList.toggle("hidden", !show);
+}
+
+startButton.addEventListener("click", (e) => {
+  e.stopPropagation();
+  toggleStartMenu();
+});
+
+document.addEventListener("click", (e) => {
+  if (!e.target.closest("#startMenu") && !e.target.closest("#startButton")) {
+    toggleStartMenu(false);
+  }
+});
+
+/* ===== NOTIFICATION ===== */
+function notify(text) {
+  const t = document.createElement("div");
+  t.className = "toast";
+  t.innerText = text;
+  desktopEl().appendChild(t);
+  setTimeout(() => t.remove(), 2500);
+}
+
+/* ===== ICON HELPERS ===== */
+function selectIcon(el) {
+  document.querySelectorAll(".icon").forEach((icon) => icon.classList.remove("selected"));
+  el.classList.add("selected");
+}
+
+/* ===== SCENARIOS ===== */
+function scenarioContent(type) {
+  const uid = `scenario-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+  let initial = "";
+  let suggestion = "";
+  let title = "";
+
+  if (type === "dating") {
+    title = "dating_chat.exe";
+    initial = "Her: We should slow down.";
+    suggestion = '"I understand. What are you feeling right now?"';
+  }
+  if (type === "conflict") {
+    title = "couple_conflict.exe";
+    initial = "Partner: You never listen.";
+    suggestion = '"I hear you. Tell me what I missed."';
+  }
+  if (type === "self") {
+    title = "self_awareness.exe";
+    initial = "System: You tend to respond defensively.";
+    suggestion = "Pause before replying.";
+  }
+
+  return {
+    title,
+    html: `
+      <div class="window-grid">
+        <div class="menu-bar"><span>File</span><span>Edit</span><span>View</span><span>Wingit</span><span>Help</span></div>
+        <div class="chat" data-chat="${uid}">${initial}</div>
+        <input type="text" data-msg="${uid}" placeholder="Type a message..." />
+        <div class="button-row">
+          <div class="button" onclick="sendMsg('${uid}','${type}')">Send</div>
+          <div class="button" onclick='applyFix(${JSON.stringify(uid)}, ${JSON.stringify(suggestion)})'>Use Wingit</div>
+        </div>
+        <div class="status-box" data-status="${uid}">Status: ready
+Escalation score: low</div>
+      </div>
+    `
+  };
+}
+
+function openScenario(type) {
+  const s = scenarioContent(type);
+  createWindow(s.title, s.html, { x: 120 + Math.random() * 80, y: 90 + Math.random() * 70, width: 380, height: 330 });
+}
+
+/* ===== CHAT LOGIC ===== */
+function sendMsg(uid, type) {
+  const msg = document.querySelector(`[data-msg="${uid}"]`);
+  const chat = document.querySelector(`[data-chat="${uid}"]`);
+  const status = document.querySelector(`[data-status="${uid}"]`);
+  if (!msg || !chat) return;
+
+  const value = msg.value.trim();
+  if (!value) return;
+
+  chat.innerHTML += `<div>You: ${value}</div>`;
+  msg.value = "";
+
+  let score = "low";
+  const lower = value.toLowerCase();
+  if (lower.includes("why") || lower.includes("always") || lower.includes("never")) {
+    score = "medium";
+    notify("Escalation detected");
+  }
+  if (lower.includes("fine") || lower.includes("whatever")) {
+    score = "high";
+    notify("Escalation risk rising");
+  }
+  if (status) {
+    status.textContent = `Status: ${type}\nEscalation score: ${score}`;
+  }
+}
+
+function applyFix(uid, text) {
+  const chat = document.querySelector(`[data-chat="${uid}"]`);
+  const status = document.querySelector(`[data-status="${uid}"]`);
+  if (!chat) return;
+  chat.innerHTML += `<div><i>Wingit:</i> ${text}</div>`;
+  if (status) {
+    status.textContent = "Status: guided\nEscalation score: reduced";
+  }
+  notify("Better outcome");
+}
+
+/* ===== FOUNDER ===== */
+function openFounder() {
+  createWindow("founder_notes.txt", `
+    <div class="window-grid">
+      <div class="menu-bar"><span>File</span><span>Edit</span><span>Format</span><span>View</span><span>Help</span></div>
+      <div class="window-body">
+        <p>Most people think communication is about words.</p>
+        <p>It isn't.</p>
+        <p>It's about what happens before and after them.</p>
+        <p style="margin-top:12px;">- Sundeep Verma</p>
+      </div>
+    </div>
+  `, { x: 160, y: 110, width: 360, height: 260 });
+}
+
+function openAboutFounder() {
+  createWindow("about_founder.exe", `
+    <div class="window-grid">
+      <div class="menu-bar"><span>File</span><span>Edit</span><span>View</span><span>Help</span></div>
+      <div class="window-body">
+        <p><b>Sundeep Verma</b></p>
+        <p>Founder of Wingit OS, building AI for relational intelligence.</p>
+        <p>Focus areas: product thinking, emotionally aware AI, trust and repair, and systems that help people communicate with more clarity.</p>
+        <p>Point of view: the best AI products do not just answer questions. They improve the quality of human decisions in sensitive moments.</p>
+      </div>
+    </div>
+  `, { x: 190, y: 120, width: 400, height: 280 });
+}
+
+/* ===== WAITLIST ===== */
+function openWaitlist() {
+  createWindow("access_request.exe", `
+    <div class="window-grid">
+      <div class="menu-bar"><span>File</span><span>Edit</span><span>Help</span></div>
+      <div class="window-body">
+        <p>Request access to Wingit OS.</p>
+        <p>Email:</p>
+        <input type="email" placeholder="you@company.com" />
+        <p style="margin-top:8px;">Notes:</p>
+        <textarea placeholder="Tell us what you're building or why you want early access."></textarea>
+        <div class="button-row">
+          <div class="button" onclick="notify('Request queued')">Submit</div>
+        </div>
+      </div>
+    </div>
+  `, { x: 180, y: 140, width: 380, height: 320 });
+}
+
+function openMail() {
+  createWindow("wingit_mail.exe", `
+    <div class="window-grid">
+      <div class="menu-bar"><span>Mail</span><span>Edit</span><span>View</span><span>Message</span></div>
+      <div class="window-body">
+        <p><b>Inbox</b></p>
+        <p>Founder deck request - investor@studio.com</p>
+        <p>Beta access - product@company.com</p>
+        <p>Advisory intro - hello@coach.org</p>
+        <div class="button-row">
+          <div class="button" onclick="notify('Mail synced')">Sync</div>
+          <div class="button" onclick="notify('No new mail')">Check mail</div>
+        </div>
+      </div>
+    </div>
+  `, { x: 220, y: 100, width: 360, height: 260 });
+}
+</script>
+
+</body>
+</html>
