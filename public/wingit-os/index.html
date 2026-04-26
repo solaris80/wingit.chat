@@ -1,1131 +1,1618 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Wingit OS</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wingit Global — World's First Relationship OS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fbfbfd;
+      --surface: rgba(255,255,255,0.72);
+      --surface-strong: #ffffff;
+      --text: #1d1d1f;
+      --muted: #6e6e73;
+      --border: #d2d2d7;
+      --accent: #0071e3;
+      --shadow: 0 18px 48px rgba(0,0,0,0.08);
+    }
 
-<style>
-/* ====== GLOBAL ====== */
-html, body { height: 100%; margin: 0; }
-body {
-  font-family: "MS Sans Serif", Tahoma, sans-serif;
-  background: #008080;
-  color: #000;
-  overflow: hidden;
-}
-.hidden { display: none !important; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-* {
-  box-sizing: border-box;
-  user-select: none;
-}
+    html { scroll-behavior: smooth; }
 
-input, textarea, pre {
-  user-select: text;
-}
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
 
-/* ====== BOOT ====== */
-#boot {
-  position: fixed;
-  inset: 0;
-  background: #000;
-  color: #00ff66;
-  font-family: monospace;
-  padding: 20px;
-  line-height: 1.6;
-  z-index: 1000;
-}
-#boot .line { opacity: 0; }
+    .container {
+      width: 88%;
+      max-width: 1080px;
+      margin: auto;
+    }
 
-/* ====== DESKTOP ====== */
-#desktop {
-  position: fixed;
-  inset: 0;
-  display: none;
-  overflow: hidden;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.09), transparent 18%),
-    radial-gradient(circle at 80% 70%, rgba(255,255,255,0.06), transparent 20%),
-    linear-gradient(180deg, #078c8c 0%, #008080 50%, #006c6c 100%);
-}
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 100;
+      background: rgba(251,251,253,0.82);
+      backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
 
-#desktop::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
-  background-size: 48px 48px;
-  opacity: 0.18;
-  pointer-events: none;
-}
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 52px;
+      width: 88%;
+      max-width: 1080px;
+      margin: auto;
+    }
 
-.desktop-icons {
-  position: absolute;
-  top: 12px;
-  left: 10px;
-  display: grid;
-  grid-auto-flow: row;
-  gap: 8px;
-  z-index: 2;
-}
+    .nav-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      text-decoration: none;
+    }
 
-.icon {
-  width: 84px;
-  padding: 6px 4px;
-  text-align: center;
-  color: #fff;
-  font-size: 12px;
-  cursor: default;
-  border: 1px solid transparent;
-}
-.icon.selected {
-  background: rgba(0, 0, 128, 0.35);
-  border: 1px dotted #fff;
-}
-.icon img {
-  width: 48px;
-  height: 48px;
-  display: block;
-  margin: 0 auto 4px;
-  border: 2px solid #000;
-  background: linear-gradient(180deg, #fff, #c0c0c0);
-  box-shadow: inset -2px -2px #808080, inset 2px 2px #fff;
-}
-.icon-label { line-height: 1.2; }
+    .brand-mark {
+      width: 31px;
+      height: 31px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
 
-/* ====== WINDOW ====== */
-.window {
-  position: absolute;
-  width: 360px;
-  min-width: 280px;
-  min-height: 180px;
-  background: #c0c0c0;
-  border: 2px solid #000;
-  box-shadow:
-    inset -2px -2px #fff,
-    inset 2px 2px #808080;
-  resize: none;
-  overflow: hidden;
-  touch-action: none;
-}
+    .brand-mark svg {
+      display: block;
+      width: 31px;
+      height: 31px;
+    }
 
-.window.active .title-bar {
-  background: #000080;
-}
+    .brand-wordmark {
+      display: inline-block;
+      line-height: 1;
+    }
 
-.window.inactive .title-bar {
-  background: #808080;
-}
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+      align-items: center;
+    }
 
-.title-bar {
-  color: #fff;
-  padding: 4px 6px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: move;
-  user-select: none;
-  font-weight: bold;
-  touch-action: none;
-  -webkit-touch-callout: none;
-}
+    .nav-links a {
+      font-size: 13px;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+      position: relative;
+    }
 
-.title-left {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 0;
-}
+    .nav-links a:hover { color: var(--text); }
 
-.title-left img {
-  width: 16px;
-  height: 16px;
-  border: 1px solid #000;
-  background: #c0c0c0;
-}
+    /* dropdown */
+    .nav-item { position: relative; }
 
-.title-text {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 220px;
-}
+    .nav-item:hover .dropdown {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateY(0);
+    }
 
-.title-buttons {
-  display: flex;
-  gap: 4px;
-}
+    .dropdown {
+      position: absolute;
+      top: calc(100% + 16px);
+      left: 50%;
+      transform: translateX(-50%) translateY(-6px);
+      background: var(--surface-strong);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      border-radius: 12px;
+      padding: 8px 0;
+      min-width: 220px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s, transform 0.2s;
+    }
 
-.tb {
-  width: 16px;
-  height: 16px;
-  background: #c0c0c0;
-  border: 2px solid #000;
-  box-shadow: inset -2px -2px #fff, inset 2px 2px #808080;
-  position: relative;
-  flex: none;
-}
+    .dropdown a {
+      display: block;
+      padding: 9px 18px;
+      font-size: 13px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
 
-.tb.min::after {
-  content: "";
-  position: absolute;
-  left: 3px;
-  right: 3px;
-  bottom: 3px;
-  height: 2px;
-  background: #000;
-}
+    .dropdown a:hover { color: var(--text); background: #f5f5f7; }
 
-.tb.max::after {
-  content: "";
-  position: absolute;
-  inset: 3px;
-  border: 2px solid #000;
-}
+    .nav-cta {
+      font-size: 13px;
+      color: #fff !important;
+      background: var(--accent);
+      padding: 7px 16px;
+      border-radius: 980px;
+      font-weight: 500;
+      transition: opacity 0.2s !important;
+    }
 
-.tb.close::before,
-.tb.close::after {
-  content: "";
-  position: absolute;
-  left: 3px;
-  right: 3px;
-  top: 7px;
-  height: 2px;
-  background: #000;
-  transform: rotate(45deg);
-}
-.tb.close::after {
-  transform: rotate(-45deg);
-}
+    .nav-cta:hover { opacity: 0.88 !important; color: #fff !important; }
 
-.content {
-  padding: 10px;
-  height: calc(100% - 24px);
-  overflow: auto;
-  background: #c0c0c0;
-}
+    /* hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
 
-.menu-bar {
-  display: flex;
-  gap: 16px;
-  padding: 2px 0 8px;
-  font-size: 12px;
-}
-.menu-bar span {
-  text-decoration: underline;
-}
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 1.5px;
+      background: var(--text);
+      transition: all 0.3s;
+    }
 
-.window-body {
-  background: #fff;
-  border: 2px solid #000;
-  box-shadow: inset -2px -2px #fff, inset 2px 2px #808080;
-  padding: 8px;
-}
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      background: rgba(255,255,255,0.96);
+      border-top: 1px solid var(--border);
+      padding: 16px 0 24px;
+    }
 
-.window-body p {
-  margin: 0 0 8px;
-  font-size: 12px;
-  line-height: 1.5;
-}
+    .mobile-menu.open { display: flex; }
 
-.window-grid {
-  display: grid;
-  gap: 8px;
-}
+    .mobile-menu a {
+      padding: 12px 24px;
+      font-size: 15px;
+      color: var(--muted);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border);
+    }
 
-.status-box {
-  background: #000;
-  color: #00ff66;
-  font-family: monospace;
-  padding: 8px;
-  border: 2px solid #000;
-  min-height: 80px;
-  white-space: pre-wrap;
-}
+    .mobile-menu a:hover { color: var(--text); }
 
-.chat {
-  height: 140px;
-  overflow: auto;
-  background: #fff;
-  border: 2px solid #000;
-  padding: 5px;
-  font-size: 12px;
-  margin-bottom: 8px;
-}
+    /* ── SECTIONS ── */
+    section { padding: 120px 0; }
 
-input[type="text"],
-input[type="email"] {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 4px 5px;
-  border: 2px solid #000;
-  background: #fff;
-  outline: none;
-}
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      text-align: left;
+      padding-top: 52px;
+      background:
+        radial-gradient(ellipse 70% 55% at 50% 0%, rgba(0,113,227,0.10) 0%, rgba(0,113,227,0) 65%),
+        linear-gradient(180deg, #ffffff 0%, #f5f5f7 100%);
+    }
 
-textarea {
-  width: 100%;
-  min-height: 78px;
-  border: 2px solid #000;
-  background: #fff;
-  padding: 4px 5px;
-  resize: none;
-  outline: none;
-}
+    .hero-eyebrow {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
 
-/* ====== BUTTON ====== */
-.button {
-  display: inline-block;
-  padding: 4px 10px;
-  margin-top: 6px;
-  background: #c0c0c0;
-  border: 2px solid #000;
-  box-shadow: inset -2px -2px #fff, inset 2px 2px #808080;
-  cursor: pointer;
-  font-size: 12px;
-}
-.button:active {
-  box-shadow: inset 2px 2px #fff, inset -2px -2px #808080;
-}
+    .hero h1 {
+      font-size: clamp(44px, 7vw, 88px);
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      color: var(--text);
+      max-width: 900px;
+    }
 
-.button-row {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, #1d1d1f 0%, #6e6e73 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
 
-/* ====== TASKBAR ====== */
-.taskbar {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 34px;
-  background: #c0c0c0;
-  border-top: 2px solid #fff;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 6px;
-  z-index: 50;
-}
+    .hero-sub {
+      margin-top: 28px;
+      font-size: 19px;
+      font-weight: 300;
+      color: var(--muted);
+      max-width: 560px;
+      line-height: 1.55;
+    }
 
-.start {
-  padding: 4px 10px;
-  border: 2px solid #000;
-  background: #c0c0c0;
-  box-shadow: inset -2px -2px #fff, inset 2px 2px #808080;
-  font-weight: bold;
-  cursor: pointer;
-  position: relative;
-  padding-left: 26px;
-}
+    .hero-actions {
+      margin-top: 44px;
+      display: flex;
+      gap: 16px;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+    }
 
-.start::before {
-  content: "";
-  position: absolute;
-  left: 8px;
-  top: 6px;
-  width: 10px;
-  height: 10px;
-  background: linear-gradient(90deg, red 0 50%, green 50% 100%);
-  box-shadow: 0 0 0 1px #000;
-}
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 14px 28px;
+      font-size: 15px;
+      font-weight: 500;
+      border-radius: 980px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
 
-.taskbar-windows {
-  display: flex;
-  gap: 4px;
-  flex: 1;
-  min-width: 0;
-  overflow: auto;
-}
+    .btn-primary:hover { opacity: 0.9; }
 
-.taskbar-btn {
-  max-width: 180px;
-  padding: 4px 10px;
-  border: 2px solid #000;
-  background: #c0c0c0;
-  box-shadow: inset -2px -2px #fff, inset 2px 2px #808080;
-  font-size: 12px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  cursor: pointer;
-}
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 14px 28px;
+      font-size: 15px;
+      font-weight: 400;
+      border-radius: 980px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: border-color 0.2s;
+    }
 
-.taskbar-btn.active {
-  box-shadow: inset 2px 2px #fff, inset -2px -2px #808080;
-  background: #d8d8d8;
-}
+    .btn-ghost:hover { border-color: var(--muted); }
 
-.clock {
-  padding: 4px 8px;
-  border: 2px solid #808080;
-  box-shadow: inset 1px 1px #fff, inset -1px -1px #000;
-  background: #c0c0c0;
-  font-size: 12px;
-  white-space: nowrap;
-}
+    /* ── DECLARATION ── */
+    .declaration {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+      background: #ffffff;
+    }
 
-/* ====== NOTIFICATIONS ====== */
-.toast {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  background: #c0c0c0;
-  border: 2px solid #000;
-  padding: 6px 10px;
-  font-size: 12px;
-  box-shadow: inset -2px -2px #fff, inset 2px 2px #808080;
-  z-index: 200;
-}
+    .declaration-label {
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 40px;
+    }
 
-/* ====== START MENU ====== */
-.start-menu {
-  position: absolute;
-  left: 6px;
-  bottom: 36px;
-  width: 240px;
-  background: #c0c0c0;
-  border: 2px solid #000;
-  box-shadow: inset -2px -2px #fff, inset 2px 2px #808080;
-  z-index: 120;
-}
-.start-menu.hidden { display: none; }
-.start-menu .banner {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 34px;
-  background: linear-gradient(180deg, #000080, #0000aa);
-}
-.start-menu .banner span {
-  position: absolute;
-  left: 4px;
-  bottom: 14px;
-  color: #fff;
-  font-weight: bold;
-  transform: rotate(-90deg);
-  transform-origin: left bottom;
-  font-size: 18px;
-  letter-spacing: 1px;
-}
-.start-menu .items {
-  margin-left: 34px;
-  padding: 6px 0;
-}
-.start-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 10px;
-  font-size: 12px;
-  cursor: pointer;
-}
-.start-item:hover {
-  background: #000080;
-  color: #fff;
-}
-.start-item .mini-icon {
-  width: 18px;
-  height: 18px;
-  border: 1px solid #000;
-  background: #e0e0e0;
-  box-shadow: inset -1px -1px #808080, inset 1px 1px #fff;
-  flex: none;
-}
+    .declaration blockquote {
+      font-size: clamp(22px, 3.5vw, 38px);
+      font-weight: 300;
+      line-height: 1.45;
+      color: var(--text);
+      max-width: 820px;
+      margin: auto;
+      letter-spacing: -0.01em;
+    }
 
-/* ====== RESIZE HANDLE ====== */
-.resize-handle {
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  right: 0;
-  bottom: 0;
-  cursor: nwse-resize;
-  touch-action: none;
-  background:
-    linear-gradient(135deg, transparent 0 45%, #808080 45% 55%, transparent 55% 100%),
-    linear-gradient(135deg, transparent 0 65%, #fff 65% 75%, transparent 75% 100%);
-}
-</style>
+    .declaration blockquote strong {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* ── STAT ROW ── */
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 80px;
+      flex-wrap: wrap;
+      padding: 80px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stat-item { text-align: center; }
+
+    .stat-num {
+      font-size: 48px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      color: var(--text);
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ── PRODUCTS ── */
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: clamp(28px, 4vw, 48px);
+      font-weight: 600;
+      letter-spacing: -0.025em;
+      color: var(--text);
+      line-height: 1.1;
+      margin-bottom: 60px;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    .product-card {
+      background: #ffffff;
+      padding: 40px 32px;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+
+    .product-card:hover { background: #ffffff; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04), var(--shadow); transform: translateY(-2px); }
+
+    .product-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: #f5f5f7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+
+    .product-card h3 {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .product-card p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .product-tag {
+      display: inline-block;
+      margin-top: 16px;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── TEAM ── */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      margin-top: 60px;
+    }
+
+    .team-card {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 32px;
+      background: #ffffff;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+    }
+
+    .team-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #f5f5f7;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .team-card h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .team-card .role {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ── FOUNDER ── */
+    .founder-block {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .founder-quote {
+      font-size: clamp(20px, 2.5vw, 28px);
+      font-weight: 300;
+      line-height: 1.5;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .founder-quote strong { font-weight: 600; }
+
+    .founder-meta { margin-top: 32px; }
+
+    .founder-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .founder-title {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .founder-visual {
+      aspect-ratio: 1;
+      border-radius: 24px;
+      background: linear-gradient(135deg, #ffffff 0%, #f5f5f7 100%);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .founder-visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* ── DOWNLOADS ── */
+    .downloads-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 40px;
+    }
+
+    .download-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 22px;
+      text-decoration: none;
+      transition: border-color 0.2s;
+      background: #ffffff;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+    }
+
+    .download-btn:hover { border-color: var(--muted); }
+
+    .download-btn .dl-icon { font-size: 24px; }
+
+    .download-btn .dl-text { display: flex; flex-direction: column; }
+
+    .download-btn .dl-sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .download-btn .dl-name {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    /* ── CONTACT ── */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      margin-top: 60px;
+    }
+
+    .contact-card {
+      background: #ffffff;
+      padding: 40px 32px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      display: block;
+    }
+
+    .contact-card:hover { background: #ffffff; box-shadow: var(--shadow); transform: translateY(-2px); }
+
+    .contact-card .c-type {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .contact-card h3 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .contact-card p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .contact-card .c-arrow {
+      margin-top: 24px;
+      font-size: 20px;
+      color: var(--muted);
+    }
+
+    /* ── MESSAGE SECTION ── */
+    .message-section {
+      padding: 160px 0;
+      text-align: center;
+      background: linear-gradient(180deg, #ffffff 0%, #f5f5f7 100%);
+      border-top: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .message-section::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 800px; height: 800px;
+      background: radial-gradient(ellipse, rgba(0,113,227,0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .message-kicker {
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 40px;
+    }
+
+    .message-headline {
+      font-size: clamp(36px, 6vw, 76px);
+      font-weight: 600;
+      letter-spacing: -0.035em;
+      line-height: 1.06;
+      color: var(--text);
+      max-width: 880px;
+      margin: 0 auto;
+    }
+
+    .message-headline em {
+      font-style: normal;
+      color: var(--muted);
+    }
+
+    .message-body {
+      margin: 36px auto 0;
+      font-size: 19px;
+      font-weight: 300;
+      color: var(--muted);
+      max-width: 500px;
+      line-height: 1.7;
+    }
+
+    .message-actions {
+      margin-top: 52px;
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ── SOCIALS ── */
+    .socials-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .social-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .social-link:hover { border-color: var(--muted); color: var(--text); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 0;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .footer-logo .brand-mark {
+      width: 29px;
+      height: 29px;
+    }
+
+    .footer-logo .brand-mark svg {
+      width: 29px;
+      height: 29px;
+    }
+
+    .brand-mark svg path {
+      fill: #000000;
+    }
+
+    .footer-copy {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--text); }
+
+    /* ── LIVE COUNTERS ── */
+    .live-strip {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: #ffffff;
+      padding: 48px 0;
+    }
+
+    .live-strip-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 40px;
+    }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: livepulse 1.6s ease-in-out infinite;
+    }
+
+    @keyframes livepulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,113,227,0.25); }
+      50% { opacity: 0.6; box-shadow: 0 0 0 5px rgba(0,113,227,0); }
+    }
+
+    .live-counters {
+      display: flex;
+      gap: 64px;
+      flex-wrap: wrap;
+    }
+
+    .lc-item { text-align: left; }
+
+    .lc-num {
+      font-size: 40px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+
+    .lc-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .lc-delta {
+      font-size: 11px;
+      color: var(--accent);
+      margin-top: 3px;
+    }
+
+    /* ── LIVE INSIGHTS ── */
+    .insights-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 56px;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .insights-updated {
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 4px;
+    }
+
+    /* top big stat cards */
+    .insights-top {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      margin-bottom: 1px;
+    }
+
+    .ins-big {
+      background: #ffffff;
+      padding: 36px 32px;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+
+    .ins-big:hover { background: #ffffff; box-shadow: var(--shadow); transform: translateY(-2px); }
+
+    .ins-big-num {
+      font-size: 52px;
+      font-weight: 600;
+      letter-spacing: -0.04em;
+      color: var(--text);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .ins-big-label {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+    .ins-big-sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 6px;
+      letter-spacing: 0.04em;
+    }
+
+    /* bar insight rows */
+    .insights-bars {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      margin-top: 1px;
+    }
+
+    .ins-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 20px 32px;
+      border-bottom: 1px solid var(--border);
+      background: #ffffff;
+      transition: background 0.2s;
+    }
+
+    .ins-bar-row:last-child { border-bottom: none; }
+    .ins-bar-row:hover { background: #f8f8fa; }
+
+    .ins-bar-label {
+      font-size: 13px;
+      color: var(--muted);
+      width: 260px;
+      flex-shrink: 0;
+    }
+
+    .ins-bar-track {
+      flex: 1;
+      height: 3px;
+      background: #e5e5ea;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .ins-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: var(--text);
+      width: 0;
+      transition: width 1.8s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .ins-bar-fill.amber { background: #ffd60a; }
+    .ins-bar-fill.red   { background: #ff453a; }
+    .ins-bar-fill.green { background: #34c759; }
+
+    .ins-bar-pct {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      width: 36px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* live feed */
+    .insights-feed {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      margin-top: 24px;
+      background: #ffffff;
+    }
+
+    .feed-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .feed-head-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .feed-head-time {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .feed-scroll {
+      height: 280px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .feed-scroll::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 80px;
+      background: linear-gradient(transparent, #ffffff);
+      pointer-events: none;
+    }
+
+    .feed-ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .feed-li {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 13px 24px;
+      border-bottom: 1px solid #f5f5f7;
+      animation: feedin 0.35s ease;
+    }
+
+    @keyframes feedin {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .feed-ts {
+      font-size: 11px;
+      color: var(--muted);
+      flex-shrink: 0;
+      width: 56px;
+      padding-top: 2px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .feed-pip { padding-top: 7px; flex-shrink: 0; }
+
+    .feed-pip span {
+      display: block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .feed-msg {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .feed-msg strong { color: var(--text); font-weight: 500; }
+
+    /* ── DIVIDER ── */
+    .divider { border: none; border-top: 1px solid var(--border); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .products-grid,
+      .team-grid,
+      .contact-grid { grid-template-columns: 1fr 1fr; }
+      .founder-block { grid-template-columns: 1fr; gap: 40px; }
+      .founder-visual { display: none; }
+    }
+
+    @media (max-width: 640px) {
+      .products-grid,
+      .team-grid,
+      .contact-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .stats { gap: 40px; }
+      section { padding: 80px 0; }
+    }
+  </style>
 </head>
-
 <body>
 
-<!-- ===== BOOT SCREEN ===== -->
-<div id="boot">
-  <div class="line">Wingit OS v0.1</div>
-  <div class="line">Initializing emotional context...</div>
-  <div class="line">Loading relational patterns...</div>
-  <div class="line">System ready.</div>
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo" aria-label="Wingit Global">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 1024 1024" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+          <path d="M573.7 252.5C422.5 197.4 201.3 96.7 201.3 96.7c-15.7-4.1-17.9 11.1-17.9 11.1-5 61.1 33.6 160.5 53.6 182.8 19.9 22.3 319.1 113.7 319.1 113.7S326 357.9 270.5 341.9c-55.6-16-37.9 17.8-37.9 17.8 11.4 61.7 64.9 131.8 107.2 138.4 42.2 6.6 220.1 4 220.1 4s-35.5 4.1-93.2 11.9c-42.7 5.8-97 12.5-111.1 17.8-33.1 12.5 24 62.6 24 62.6 84.7 76.8 129.7 50.5 129.7 50.5 33.3-10.7 61.4-18.5 85.2-24.2L565 743.1h84.6L603 928l205.3-271.9H700.8l22.3-38.7c.3.5.4.8.4.8S799.8 496.1 829 433.8l.6-1h-.1c5-10.8 8.6-19.7 10-25.8 17-71.3-114.5-99.4-265.8-154.5z"/>
+        </svg>
+      </span>
+      <span class="brand-wordmark">Wingit Global</span>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+
+      <li class="nav-item">
+        <a href="#products">Products ▾</a>
+        <div class="dropdown">
+          <a href="#products">Wingit OS</a>
+          <a href="#products">Wingit For WhatsApp</a>
+          <a href="#products">Wingit Novella</a>
+          <a href="#products">Wingit Storyfic</a>
+          <a href="#products">Wingit Live : Chrome Extension for Google Meet</a>
+        </div>
+      </li>
+
+      <li><a href="#team">Team</a></li>
+      <li><a href="#founder">Founder</a></li>
+      <li><a href="#insights">Live Insights</a></li>
+      <li><a href="#downloads">Downloads</a></li>
+
+      <li class="nav-item">
+        <a href="#contact">Contact ▾</a>
+        <div class="dropdown">
+          <a href="#contact">Investor Relations</a>
+          <a href="#contact">Internships</a>
+          <a href="#contact">Early Access User</a>
+          <a href="#contact">Press</a>
+        </div>
+      </li>
+
+      <li><a href="#contact" class="nav-cta">Get Access</a></li>
+    </ul>
+
+    <button class="hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#about">About Wingit Global</a>
+    <a href="#products">Wingit OS</a>
+    <a href="#products">Wingit — WhatsApp</a>
+    <a href="#products">Novella</a>
+    <a href="#products">Storyfic</a>
+    <a href="#products">Chrome Extension for Google Meet</a>
+    <a href="#team">Team</a>
+    <a href="#founder">Founder</a>
+    <a href="#insights">Live Insights</a>
+    <a href="#downloads">Downloads</a>
+    <a href="#contact">Investor Relations</a>
+    <a href="#contact">Internships</a>
+    <a href="#contact">Early Access User</a>
+    <a href="#contact">Press</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero" id="home">
+  <div class="container">
+    <p class="hero-eyebrow">Wingit Global · Est. 2024</p>
+    <h1>The World's First<br/><em>Relationship OS.</em></h1>
+    <p class="hero-sub">
+      We didn't build another app.<br/>
+      We built the operating system for human connection.
+    </p>
+    <div class="hero-actions">
+      <a href="#products" class="btn-primary">Explore the OS</a>
+      <a href="#about" class="btn-ghost">Our Mission</a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── LIVE COUNTERS ── -->
+<div class="live-strip">
+  <div class="container">
+    <div class="live-strip-inner">
+      <div class="live-badge">
+        <div class="live-dot"></div>
+        System live
+      </div>
+      <div class="live-counters">
+        <div class="lc-item">
+          <div class="lc-num" id="lcInteractions">0</div>
+          <div class="lc-label">Interactions analyzed</div>
+          <div class="lc-delta" id="lcInteractionsDelta">+0 /min</div>
+        </div>
+        <div class="lc-item">
+          <div class="lc-num" id="lcConflicts">0</div>
+          <div class="lc-label">Conflicts prevented</div>
+          <div class="lc-delta">↓ escalation</div>
+        </div>
+        <div class="lc-item">
+          <div class="lc-num" id="lcSessions">0</div>
+          <div class="lc-label">Active sessions now</div>
+          <div class="lc-delta" id="lcSessionsDelta">live</div>
+        </div>
+        <div class="lc-item">
+          <div class="lc-num" id="lcClarity">0</div>
+          <div class="lc-label">Avg. clarity score</div>
+          <div class="lc-delta">out of 100</div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- ===== DESKTOP ===== -->
-<div id="desktop">
-
-  <!-- ICONS -->
-  <div class="desktop-icons">
-    <div class="icon" data-icon="chat" data-scenario="dating" ondblclick="openScenario('dating')" onclick="selectIcon(this)">
-      <img src="" alt="" />
-      <div class="icon-label">dating_chat.exe</div>
-    </div>
-
-    <div class="icon" data-icon="conflict" data-scenario="conflict" ondblclick="openScenario('conflict')" onclick="selectIcon(this)">
-      <img src="" alt="" />
-      <div class="icon-label">couple_conflict.exe</div>
-    </div>
-
-    <div class="icon" data-icon="self" data-scenario="self" ondblclick="openScenario('self')" onclick="selectIcon(this)">
-      <img src="" alt="" />
-      <div class="icon-label">self_awareness.exe</div>
-    </div>
-
-    <div class="icon" data-icon="notes" ondblclick="openFounder()" onclick="selectIcon(this)">
-      <img src="" alt="" />
-      <div class="icon-label">founder_notes.txt</div>
-    </div>
-
-    <div class="icon" data-icon="request" ondblclick="openWaitlist()" onclick="selectIcon(this)">
-      <img src="" alt="" />
-      <div class="icon-label">access_request.exe</div>
-    </div>
-
-    <div class="icon" data-icon="mail" ondblclick="openMail()" onclick="selectIcon(this)">
-      <img src="" alt="" />
-      <div class="icon-label">wingit_mail.exe</div>
-    </div>
+<!-- ── DECLARATION ── -->
+<section class="declaration" id="about">
+  <div class="container">
+    <p class="declaration-label">The Declaration</p>
+    <blockquote>
+      "Every technology era has its defining infrastructure.<br/>
+      The internet connected information.<br/>
+      The smartphone connected people to the world.<br/>
+      <strong>Wingit connects people to each other — intelligently, intentionally, for the first time.</strong>"
+    </blockquote>
   </div>
+</section>
 
-  <!-- START MENU -->
-  <div id="startMenu" class="start-menu hidden">
-    <div class="banner"><span>Wingit</span></div>
-    <div class="items">
-      <div class="start-item" onclick="toggleStartMenu(false); openScenario('dating')"><div class="mini-icon"></div>Dating Chat</div>
-      <div class="start-item" onclick="toggleStartMenu(false); openScenario('conflict')"><div class="mini-icon"></div>Couple Conflict</div>
-      <div class="start-item" onclick="toggleStartMenu(false); openScenario('self')"><div class="mini-icon"></div>Self Awareness</div>
-      <div class="start-item" onclick="toggleStartMenu(false); openMail()"><div class="mini-icon"></div>Wingit Mail</div>
-      <div class="start-item" onclick="toggleStartMenu(false); openFounder()"><div class="mini-icon"></div>Founder Notes</div>
-      <div class="start-item" onclick="toggleStartMenu(false); openAboutFounder()"><div class="mini-icon"></div>About Founder</div>
-      <div class="start-item" onclick="toggleStartMenu(false); openWaitlist()"><div class="mini-icon"></div>Request Access</div>
-      <div class="start-item" onclick="toggleStartMenu(false); notify('Shutting down Wingit OS...')"><div class="mini-icon"></div>Shut Down</div>
+<!-- ── STATS ── -->
+<div class="container">
+  <div class="stats">
+    <div class="stat-item">
+      <div class="stat-num">#1</div>
+      <div class="stat-label">Relationship OS globally</div>
     </div>
-  </div>
-
-  <!-- TASKBAR -->
-  <div class="taskbar">
-    <div class="start" id="startButton">Start</div>
-    <div class="taskbar-windows" id="taskbarWindows"></div>
-    <div class="clock" id="clock">12:00 PM</div>
+    <div class="stat-item">
+      <div class="stat-num">5</div>
+      <div class="stat-label">Products in the ecosystem</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">∞</div>
+      <div class="stat-label">Relationships worth protecting</div>
+    </div>
   </div>
 </div>
+
+<!-- ── PRODUCTS ── -->
+<section id="products">
+  <div class="container">
+    <p class="section-label">The Ecosystem</p>
+    <h2 class="section-title">Five products.<br/>One operating system.</h2>
+
+    <div class="products-grid">
+
+      <div class="product-card">
+        <div class="product-icon">☯︎</div>
+        <h3>Wingit OS</h3>
+        <p>The core intelligence layer. Awareness, guidance, and relational memory — built as infrastructure.</p>
+        <span class="product-tag">Core Platform</span>
+      </div>
+
+      <div class="product-card">
+        <div class="product-icon">💬</div>
+        <h3>Wingit — WhatsApp</h3>
+        <p>Relationship intelligence layered directly into the world's most-used messaging platform.</p>
+        <span class="product-tag">Integration</span>
+      </div>
+
+      <div class="product-card">
+        <div class="product-icon">🀢</div>
+        <h3>Novella</h3>
+        <p>Your relationship story, structured. A living record of what matters between people.</p>
+        <span class="product-tag">Memory Layer</span>
+      </div>
+
+      <div class="product-card">
+        <div class="product-icon">؛༊</div>
+        <h3>Storyfic</h3>
+        <p>Narrative intelligence for relationships. Understand the arc, not just the moment.</p>
+        <span class="product-tag">Narrative Engine</span>
+      </div>
+
+      <div class="product-card">
+        <div class="product-icon">𝐆</div>
+        <h3>Chrome Extension — Google Meet</h3>
+        <p>Real-time relational awareness during video calls. Presence, tone, and intent — decoded live.</p>
+        <span class="product-tag">Live Intelligence</span>
+      </div>
+
+      <div class="product-card" style="background:#ffffff; display:flex; align-items:center; justify-content:center; text-align:center;">
+        <div>
+          <p style="font-size:13px; color:var(--muted); line-height:1.7;">More products<br/>in development.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── LIVE INSIGHTS ── -->
+<section id="insights" style="background:#ffffff; border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <div class="container">
+
+    <div class="insights-header">
+      <div>
+        <p class="section-label">Live Insights</p>
+        <h2 class="section-title" style="margin-bottom:0;">What the OS sees<br/>in human relationships.</h2>
+      </div>
+      <div class="insights-updated">
+        <div class="live-dot"></div>
+        <span id="insightsUpdated">Updating live</span>
+      </div>
+    </div>
+
+    <!-- BIG STATS -->
+    <div class="insights-top">
+      <div class="ins-big">
+        <div class="ins-big-num" id="insPressure">68%</div>
+        <div class="ins-big-label">of digital messages carry hidden emotional pressure the sender doesn't intend</div>
+        <div class="ins-big-sub">Detected via tone + pacing analysis</div>
+      </div>
+      <div class="ins-big">
+        <div class="ins-big-num" id="insMisread">54%</div>
+        <div class="ins-big-label">of messages are misread by the recipient — tone interpreted differently than sent</div>
+        <div class="ins-big-sub">Cross-referenced sender intent vs. recipient response</div>
+      </div>
+      <div class="ins-big">
+        <div class="ins-big-num">11 min</div>
+        <div class="ins-big-label">average time before a neutral conversation turns negative without intervention</div>
+        <div class="ins-big-sub">Measured across active sessions</div>
+      </div>
+    </div>
+
+    <!-- BAR INSIGHTS -->
+    <div class="insights-bars">
+      <div class="ins-bar-row">
+        <span class="ins-bar-label">Conflicts resolved before escalation</span>
+        <div class="ins-bar-track"><div class="ins-bar-fill green" data-w="81"></div></div>
+        <span class="ins-bar-pct">81%</span>
+      </div>
+      <div class="ins-bar-row">
+        <span class="ins-bar-label">Users who rewrote a message after OS suggestion</span>
+        <div class="ins-bar-track"><div class="ins-bar-fill" data-w="73"></div></div>
+        <span class="ins-bar-pct">73%</span>
+      </div>
+      <div class="ins-bar-row">
+        <span class="ins-bar-label">Conversations with recurring argument patterns</span>
+        <div class="ins-bar-track"><div class="ins-bar-fill amber" data-w="61"></div></div>
+        <span class="ins-bar-pct">61%</span>
+      </div>
+      <div class="ins-bar-row">
+        <span class="ins-bar-label">Messages sent during high-stress windows</span>
+        <div class="ins-bar-track"><div class="ins-bar-fill red" data-w="44"></div></div>
+        <span class="ins-bar-pct">44%</span>
+      </div>
+      <div class="ins-bar-row">
+        <span class="ins-bar-label">Users reporting improved relationship clarity after 7 days</span>
+        <div class="ins-bar-track"><div class="ins-bar-fill green" data-w="91"></div></div>
+        <span class="ins-bar-pct">91%</span>
+      </div>
+    </div>
+
+    <!-- LIVE FEED -->
+    <div class="insights-feed">
+      <div class="feed-head">
+        <div class="feed-head-title">
+          <div class="live-dot"></div>
+          Real-time signal feed
+        </div>
+        <div class="feed-head-time" id="feedTime">—</div>
+      </div>
+      <div class="feed-scroll">
+        <ul class="feed-ul" id="insightFeed"></ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── TEAM ── -->
+<section id="team" style="background:#ffffff; border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <div class="container">
+    <p class="section-label">The Team</p>
+    <h2 class="section-title">Built by people who<br/>believe relationships are infrastructure.</h2>
+
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-avatar">𓅃</div>
+        <h3>Leadership</h3>
+        <p class="role">Vision & Strategy</p>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">𓃶</div>
+        <h3>Engineering</h3>
+        <p class="role">Systems & Intelligence</p>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">𓅇</div>
+        <h3>Design</h3>
+        <p class="role">Experience & Interface</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOUNDER ── -->
+<section id="founder">
+  <div class="container">
+    <p class="section-label">The Founder</p>
+    <div class="founder-block">
+      <div>
+        <p class="founder-quote">
+          "I didn't set out to build a company.<br/>
+          I set out to solve the most fundamental problem in human life:<br/>
+          <strong>why do people who love each other still hurt each other?</strong><br/><br/>
+          The answer wasn't therapy. It wasn't better communication tips.<br/>
+          It was infrastructure. It was an OS."
+        </p>
+        <div class="founder-meta">
+          <p class="founder-name">Sundeep Verma</p>
+          <p class="founder-name">Founder, Wingit Global</p>
+          <p class="founder-title">Creator of the World's First Relationship OS</p>
+        </div>
+      </div>
+      <div class="founder-visual">
+        <img src="https://res.cloudinary.com/dmlontetd/image/upload/v1777231809/sundeep_verma_wingit_htgwtv.jpg" alt="Founder portrait" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── DOWNLOADS ── -->
+<section id="downloads" style="background:#ffffff; border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <div class="container">
+    <p class="section-label">Downloads</p>
+    <h2 class="section-title">The OS is live.<br/>Start here.</h2>
+
+    <div class="downloads-row">
+      <a href="#" class="download-btn">
+        <span class="dl-icon"> </span>
+        <span class="dl-text">
+          <span class="dl-sub">Download on the</span>
+          <span class="dl-name">App Store</span>
+        </span>
+      </a>
+      <a href="#" class="download-btn">
+        <span class="dl-icon">▶</span>
+        <span class="dl-text">
+          <span class="dl-sub">Get it on</span>
+          <span class="dl-name">Google Play</span>
+        </span>
+      </a>
+      <a href="#" class="download-btn">
+        <span class="dl-icon">🇬</span>
+        <span class="dl-text">
+          <span class="dl-sub">Install the</span>
+          <span class="dl-name">Chrome Extension</span>
+        </span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT ── -->
+<section id="contact">
+  <div class="container">
+    <p class="section-label">Contact</p>
+    <h2 class="section-title">Join the category.<br/>Shape what's next.</h2>
+
+    <div class="contact-grid">
+
+      <a href="mailto:wingit.global@gmail.com" class="contact-card">
+        <p class="c-type">Investors</p>
+        <h3>Back the OS</h3>
+        <p>We're building the defining infrastructure of the next era of human connection.</p>
+        <p class="c-arrow">→</p>
+      </a>
+
+      <a href="mailto:wingit.global@gmail.com" class="contact-card">
+        <p class="c-type">Internships</p>
+        <h3>Build with us</h3>
+        <p>Work on problems that have never been solved. Join a team rewriting the rules.</p>
+        <p class="c-arrow">→</p>
+      </a>
+
+      <a href="mailto:wingit.global@gmail.com" class="contact-card">
+        <p class="c-type">Early Access User</p>
+        <h3>Get invited early</h3>
+        <p>Be among the first to experience the OS and help shape what ships next.</p>
+        <p class="c-arrow">→</p>
+      </a>
+
+      <a href="mailto:wingit.global@gmail.com" class="contact-card">
+        <p class="c-type">Press</p>
+        <h3>Tell the story</h3>
+        <p>The world's first Relationship OS is a story worth telling. We're ready to talk.</p>
+        <p class="c-arrow">→</p>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── MESSAGE ── -->
+<section class="message-section">
+  <div class="container">
+    <p class="message-kicker">A message to the world</p>
+    <h2 class="message-headline">
+      Your relationships are not broken.<br/>
+      <em>They were just never given<br/>the right infrastructure.</em>
+    </h2>
+    <p class="message-body">
+      Every fight that didn't need to happen.<br/>
+      Every message misread at midnight.<br/>
+      Every person you lost because neither of you<br/>
+      had the words, or the awareness to find them.<br/><br/>
+      <strong style="color:var(--text); font-weight:500;">That ends now.</strong>
+    </p>
+    <div class="message-actions">
+      <a href="#products" class="btn-primary">Enter the OS</a>
+      <a href="#insights" class="btn-ghost">See the data</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <span class="footer-logo">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 1024 1024" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+            <path d="M573.7 252.5C422.5 197.4 201.3 96.7 201.3 96.7c-15.7-4.1-17.9 11.1-17.9 11.1-5 61.1 33.6 160.5 53.6 182.8 19.9 22.3 319.1 113.7 319.1 113.7S326 357.9 270.5 341.9c-55.6-16-37.9 17.8-37.9 17.8 11.4 61.7 64.9 131.8 107.2 138.4 42.2 6.6 220.1 4 220.1 4s-35.5 4.1-93.2 11.9c-42.7 5.8-97 12.5-111.1 17.8-33.1 12.5 24 62.6 24 62.6 84.7 76.8 129.7 50.5 129.7 50.5 33.3-10.7 61.4-18.5 85.2-24.2L565 743.1h84.6L603 928l205.3-271.9H700.8l22.3-38.7c.3.5.4.8.4.8S799.8 496.1 829 433.8l.6-1h-.1c5-10.8 8.6-19.7 10-25.8 17-71.3-114.5-99.4-265.8-154.5z"/>
+          </svg>
+        </span>
+        <span class="brand-wordmark">Wingit Global</span>
+      </span>
+
+      <div class="socials-row">
+        <a href="https://instagram.com/wingitglobal" target="_blank" class="social-link" title="Instagram">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        </a>
+        <a href="https://x.com/wingitglobal" target="_blank" class="social-link" title="X">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+        <a href="https://linkedin.com/company/wingitglobal" target="_blank" class="social-link" title="LinkedIn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7H10V9h4v1.765C14.996 9.485 16.374 8 18 8zM2 9h4v12H2zm2-6a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/></svg>
+        </a>
+        <a href="https://youtube.com/@wingitglobal" target="_blank" class="social-link" title="YouTube">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58zM9.75 15.02V8.98L15.5 12l-5.75 3.02z"/></svg>
+        </a>
+        <a href="https://tiktok.com/@wingitglobal" target="_blank" class="social-link" title="TikTok">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 0 0-6.13 6.33 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>
+        </a>
+        <a href="https://threads.net/@wingitglobal" target="_blank" class="social-link" title="Threads">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.474 12.01v-.017c.03-3.579.886-6.43 2.548-8.482C5.865 1.205 8.617.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.75-1.757-.513-.586-1.308-.883-2.359-.89h-.029c-.844 0-1.992.232-2.721 1.32L7.734 9.97c.98-1.454 2.568-2.256 4.478-2.256h.044c3.194.02 5.097 1.975 5.287 5.388.108.046.216.094.321.142 1.49.7 2.58 1.761 3.154 3.07.797 1.82.871 4.79-1.548 7.158-1.85 1.81-4.094 2.628-7.284 2.528z"/></svg>
+        </a>
+      </div>
+
+      <div class="footer-links">
+        <a href="#about">About</a>
+        <a href="#products">Products</a>
+        <a href="#insights">Insights</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
+
+    <div style="margin-top:28px; padding-top:24px; border-top:1px solid var(--border); display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+      <span class="footer-copy">© 2026 Wingit Global · World's First Relationship OS</span>
+      <span class="footer-copy">wingit.chat</span>
+    </div>
+  </div>
+</footer>
 
 <script>
-const ICONS = {
-  chat: 'data:image/svg+xml;utf8,' + encodeURIComponent(`
-    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" shape-rendering="crispEdges">
-      <rect width="48" height="48" fill="#c0c0c0"/>
-      <rect x="1" y="1" width="46" height="46" fill="none" stroke="#000" stroke-width="2"/>
-      <rect x="6" y="6" width="36" height="36" fill="#e6f0ff"/>
-      <rect x="8" y="8" width="32" height="4" fill="#000080"/>
-      <rect x="10" y="16" width="20" height="16" fill="#ffffff"/>
-      <rect x="12" y="18" width="16" height="2" fill="#00ff66"/>
-      <rect x="12" y="22" width="14" height="2" fill="#00ff66"/>
-      <rect x="12" y="26" width="10" height="2" fill="#00ff66"/>
-      <rect x="30" y="20" width="6" height="6" fill="#ff4fd8"/>
-      <rect x="28" y="26" width="6" height="4" fill="#ff4fd8"/>
-    </svg>`),
-  conflict: 'data:image/svg+xml;utf8,' + encodeURIComponent(`
-    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" shape-rendering="crispEdges">
-      <rect width="48" height="48" fill="#c0c0c0"/>
-      <rect x="1" y="1" width="46" height="46" fill="none" stroke="#000" stroke-width="2"/>
-      <rect x="6" y="6" width="36" height="36" fill="#fff7e6"/>
-      <rect x="8" y="8" width="32" height="4" fill="#800000"/>
-      <rect x="12" y="16" width="10" height="10" fill="#ff4fd8"/>
-      <rect x="20" y="16" width="10" height="10" fill="#00e5ff"/>
-      <rect x="14" y="18" width="6" height="2" fill="#000"/>
-      <rect x="22" y="18" width="6" height="2" fill="#000"/>
-      <rect x="16" y="22" width="16" height="4" fill="#000"/>
-      <rect x="18" y="28" width="12" height="6" fill="#808080"/>
-    </svg>`),
-  self: 'data:image/svg+xml;utf8,' + encodeURIComponent(`
-    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" shape-rendering="crispEdges">
-      <rect width="48" height="48" fill="#c0c0c0"/>
-      <rect x="1" y="1" width="46" height="46" fill="none" stroke="#000" stroke-width="2"/>
-      <rect x="6" y="6" width="36" height="36" fill="#eef7ff"/>
-      <rect x="8" y="8" width="32" height="4" fill="#008080"/>
-      <rect x="17" y="14" width="14" height="14" rx="0" fill="#fff"/>
-      <rect x="19" y="16" width="10" height="2" fill="#8c7cff"/>
-      <rect x="19" y="20" width="10" height="2" fill="#8c7cff"/>
-      <rect x="19" y="24" width="10" height="2" fill="#8c7cff"/>
-      <rect x="14" y="30" width="20" height="4" fill="#00ff66"/>
-      <rect x="18" y="34" width="12" height="2" fill="#000"/>
-    </svg>`),
-  notes: 'data:image/svg+xml;utf8,' + encodeURIComponent(`
-    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" shape-rendering="crispEdges">
-      <rect width="48" height="48" fill="#c0c0c0"/>
-      <rect x="1" y="1" width="46" height="46" fill="none" stroke="#000" stroke-width="2"/>
-      <rect x="8" y="6" width="28" height="36" fill="#fff"/>
-      <rect x="10" y="8" width="24" height="4" fill="#000080"/>
-      <rect x="12" y="16" width="20" height="2" fill="#000"/>
-      <rect x="12" y="20" width="18" height="2" fill="#000"/>
-      <rect x="12" y="24" width="16" height="2" fill="#000"/>
-      <rect x="12" y="28" width="14" height="2" fill="#000"/>
-      <rect x="22" y="14" width="12" height="20" fill="#ff4fd8"/>
-      <rect x="24" y="16" width="8" height="2" fill="#fff"/>
-      <rect x="24" y="20" width="8" height="2" fill="#fff"/>
-    </svg>`),
-  request: 'data:image/svg+xml;utf8,' + encodeURIComponent(`
-    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" shape-rendering="crispEdges">
-      <rect width="48" height="48" fill="#c0c0c0"/>
-      <rect x="1" y="1" width="46" height="46" fill="none" stroke="#000" stroke-width="2"/>
-      <rect x="6" y="6" width="36" height="36" fill="#f0f0f0"/>
-      <rect x="8" y="8" width="32" height="4" fill="#000080"/>
-      <rect x="12" y="18" width="24" height="14" fill="#fff"/>
-      <rect x="14" y="20" width="20" height="2" fill="#00e5ff"/>
-      <rect x="14" y="24" width="12" height="2" fill="#00e5ff"/>
-      <rect x="14" y="28" width="16" height="2" fill="#00e5ff"/>
-      <rect x="24" y="14" width="10" height="10" fill="#8c7cff"/>
-      <rect x="28" y="18" width="2" height="2" fill="#fff"/>
-    </svg>`),
-  mail: 'data:image/svg+xml;utf8,' + encodeURIComponent(`
-    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" shape-rendering="crispEdges">
-      <rect width="48" height="48" fill="#c0c0c0"/>
-      <rect x="1" y="1" width="46" height="46" fill="none" stroke="#000" stroke-width="2"/>
-      <rect x="6" y="6" width="36" height="36" fill="#eef7ff"/>
-      <rect x="8" y="8" width="32" height="4" fill="#000080"/>
-      <rect x="10" y="14" width="28" height="20" fill="#fff"/>
-      <rect x="12" y="16" width="24" height="2" fill="#ff4fd8"/>
-      <rect x="12" y="18" width="2" height="2" fill="#ff4fd8"/>
-      <rect x="14" y="20" width="20" height="2" fill="#000"/>
-      <rect x="14" y="24" width="20" height="2" fill="#000"/>
-      <rect x="14" y="28" width="20" height="2" fill="#000"/>
-      <rect x="14" y="20" width="10" height="8" fill="#00e5ff"/>
-      <rect x="24" y="20" width="10" height="8" fill="#8c7cff"/>
-    </svg>`),
-};
-
-const WINDOW_ICON = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges">
-    <rect width="16" height="16" fill="#c0c0c0"/>
-    <rect x="1" y="1" width="14" height="14" fill="#fff" stroke="#000" stroke-width="1"/>
-    <rect x="2" y="2" width="12" height="3" fill="#000080"/>
-    <rect x="4" y="7" width="8" height="5" fill="#00e5ff"/>
-    <rect x="5" y="8" width="6" height="1" fill="#fff"/>
-    <rect x="5" y="10" width="4" height="1" fill="#ff4fd8"/>
-  </svg>`);
-
-document.querySelectorAll(".desktop-icons .icon").forEach((icon) => {
-  const img = icon.querySelector("img");
-  const key = icon.dataset.icon;
-  if (img && ICONS[key]) {
-    img.src = ICONS[key];
-  }
-});
-
-/* ===== BOOT SEQUENCE ===== */
-const lines = document.querySelectorAll("#boot .line");
-let i = 0;
-function showLine() {
-  if (i < lines.length) {
-    lines[i].style.opacity = 1;
-    i++;
-    setTimeout(showLine, 600);
-  } else {
-    setTimeout(() => {
-      document.getElementById("boot").style.display = "none";
-      document.getElementById("desktop").style.display = "block";
-      updateClock();
-    }, 800);
-  }
-}
-showLine();
-
-/* ===== CLOCK ===== */
-function updateClock() {
-  const el = document.getElementById("clock");
-  const now = new Date();
-  let h = now.getHours();
-  const m = String(now.getMinutes()).padStart(2, "0");
-  const ampm = h >= 12 ? "PM" : "AM";
-  h = h % 12 || 12;
-  el.textContent = `${h}:${m} ${ampm}`;
-}
-setInterval(updateClock, 30000);
-updateClock();
-
-/* ===== WINDOW SYSTEM ===== */
-let z = 10;
-let activeWindow = null;
-let windowCount = 0;
-const openWindows = new Map();
-
-function desktopEl() {
-  return document.getElementById("desktop");
-}
-
-function taskbarEl() {
-  return document.getElementById("taskbarWindows");
-}
-
-function setActive(win) {
-  if (!win) return;
-  openWindows.forEach((w, id) => {
-    w.classList.toggle("active", w === win);
-    w.classList.toggle("inactive", w !== win);
-    const btn = document.querySelector(`[data-win-id="${id}"]`);
-    if (btn) btn.classList.toggle("active", w === win && !w.classList.contains("minimized"));
-  });
-  activeWindow = win;
-  win.style.zIndex = ++z;
-}
-
-function minimizeWindow(win) {
-  win.classList.add("minimized");
-  win.style.display = "none";
-  const btn = document.querySelector(`[data-win-id="${win.dataset.winId}"]`);
-  if (btn) btn.classList.remove("active");
-  if (activeWindow === win) activeWindow = null;
-}
-
-function restoreWindow(win) {
-  win.classList.remove("minimized");
-  win.style.display = "block";
-  setActive(win);
-}
-
-function toggleMaximize(win) {
-  const isMax = win.dataset.maximized === "true";
-  if (isMax) {
-    win.style.left = win.dataset.prevLeft || "120px";
-    win.style.top = win.dataset.prevTop || "80px";
-    win.style.width = win.dataset.prevWidth || "360px";
-    win.style.height = win.dataset.prevHeight || "auto";
-    win.dataset.maximized = "false";
-  } else {
-    win.dataset.prevLeft = win.style.left;
-    win.dataset.prevTop = win.style.top;
-    win.dataset.prevWidth = win.style.width;
-    win.dataset.prevHeight = win.style.height;
-    win.style.left = "0px";
-    win.style.top = "0px";
-    win.style.width = "100%";
-    win.style.height = "calc(100% - 34px)";
-    win.dataset.maximized = "true";
-  }
-  setActive(win);
-}
-
-function attachWindowInteractions(win) {
-  const titleBar = win.querySelector(".title-bar");
-  const resizeHandle = win.querySelector(".resize-handle");
-  const minBtn = win.querySelector(".tb.min");
-  const maxBtn = win.querySelector(".tb.max");
-  const closeBtn = win.querySelector(".tb.close");
-  let dragState = null;
-  let resizeState = null;
-  let activeTouchId = null;
-
-  function startDrag(clientX, clientY) {
-    if (win.dataset.maximized === "true") return;
-    setActive(win);
-    dragState = {
-      startX: clientX,
-      startY: clientY,
-      originLeft: parseInt(win.style.left, 10) || 0,
-      originTop: parseInt(win.style.top, 10) || 0,
-    };
+  function toggleMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
   }
 
-  function moveDrag(clientX, clientY) {
-    if (!dragState) return;
-    win.style.left = `${dragState.originLeft + clientX - dragState.startX}px`;
-    win.style.top = `${dragState.originTop + clientY - dragState.startY}px`;
+  // ── LIVE INSIGHTS BARS (animate on scroll) ──
+  var barsAnimated = false;
+  function animateBars() {
+    if (barsAnimated) return;
+    barsAnimated = true;
+    document.querySelectorAll('.ins-bar-fill').forEach(function(bar) {
+      bar.style.width = bar.dataset.w + '%';
+    });
   }
 
-  function endDrag() {
-    dragState = null;
+  var barObserver = new IntersectionObserver(function(entries) {
+    if (entries[0].isIntersecting) animateBars();
+  }, { threshold: 0.2 });
+  barObserver.observe(document.getElementById('insights'));
+
+  // ── LIVE FEED ──
+  var feedEvents = [
+    { color: '#30d158', msg: '<strong>Conflict de-escalated</strong> — tone shift caught before message was sent' },
+    { color: '#ffd60a', msg: '<strong>Pressure pattern</strong> — passive urgency flagged in draft, user notified' },
+    { color: '#0a84ff', msg: '<strong>Context memory triggered</strong> — prior tension referenced, guidance updated' },
+    { color: '#30d158', msg: '<strong>Clarity score +4</strong> — user rewrote message after OS suggestion' },
+    { color: '#ff453a', msg: '<strong>High-stress window</strong> — send nudge issued, user paused 2 min' },
+    { color: '#30d158', msg: '<strong>Recurring loop broken</strong> — argument pattern resolved after 3 sessions' },
+    { color: '#0a84ff', msg: '<strong>Meet session</strong> — emotional presence tracked across 4 participants' },
+    { color: '#ffd60a', msg: '<strong>Tone mismatch</strong> — sender intent vs. recipient read diverged 58%' },
+    { color: '#30d158', msg: '<strong>Novella entry logged</strong> — relationship milestone captured automatically' },
+    { color: '#0a84ff', msg: '<strong>WhatsApp layer</strong> — 19 messages analyzed in last 60 seconds' },
+    { color: '#ffd60a', msg: '<strong>Avoidance detected</strong> — topic suppression pattern flagged for review' },
+    { color: '#30d158', msg: '<strong>7-day trend</strong> — relational clarity score up +11 points this week' },
+    { color: '#ff453a', msg: '<strong>Late-night send risk</strong> — message queued for morning delivery' },
+    { color: '#0a84ff', msg: '<strong>Storyfic arc updated</strong> — narrative shift detected in conversation thread' },
+  ];
+  var feedIdx = 0;
+
+  function nowTime() {
+    return new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
   }
 
-  function startResize(clientX, clientY) {
-    if (win.dataset.maximized === "true") return;
-    setActive(win);
-    resizeState = {
-      startX: clientX,
-      startY: clientY,
-      startW: win.offsetWidth,
-      startH: win.offsetHeight,
-    };
+  function addFeedItem() {
+    var ul = document.getElementById('insightFeed');
+    if (!ul) return;
+    var ev = feedEvents[feedIdx % feedEvents.length];
+    feedIdx++;
+    var li = document.createElement('li');
+    li.className = 'feed-li';
+    li.innerHTML = '<span class="feed-ts">' + nowTime() + '</span>' +
+      '<div class="feed-pip"><span style="background:' + ev.color + '"></span></div>' +
+      '<span class="feed-msg">' + ev.msg + '</span>';
+    ul.insertBefore(li, ul.firstChild);
+    if (ul.children.length > 30) ul.removeChild(ul.lastChild);
+    var ft = document.getElementById('feedTime');
+    if (ft) ft.textContent = 'Last update: ' + nowTime();
   }
 
-  function moveResize(clientX, clientY) {
-    if (!resizeState) return;
-    win.style.width = `${Math.max(280, resizeState.startW + clientX - resizeState.startX)}px`;
-    win.style.height = `${Math.max(180, resizeState.startH + clientY - resizeState.startY)}px`;
-  }
+  // seed feed with 5 items immediately
+  for (var i = 0; i < 5; i++) (function(delay){ setTimeout(addFeedItem, delay); })(i * 100);
+  setInterval(addFeedItem, 3000);
 
-  function endResize() {
-    resizeState = null;
+  // update insights timestamp
+  function updateInsightsTime() {
+    var el = document.getElementById('insightsUpdated');
+    if (el) el.textContent = 'Updated ' + nowTime();
   }
+  setInterval(updateInsightsTime, 5000);
 
-  function getTouchById(touches, id) {
-    for (const touch of touches) {
-      if (touch.identifier === id) return touch;
+  // ── LIVE COUNTERS ──
+  var counts = { interactions: 24318, conflicts: 3412, sessions: 143, clarity: 74 };
+
+  function animateCount(el, from, to, duration) {
+    var start = null;
+    function step(ts) {
+      if (!start) start = ts;
+      var p = Math.min((ts - start) / duration, 1);
+      var ease = 1 - Math.pow(1 - p, 4);
+      el.textContent = Math.round(from + (to - from) * ease).toLocaleString();
+      if (p < 1) requestAnimationFrame(step);
     }
-    return null;
+    requestAnimationFrame(step);
   }
 
-  function handleTouchMove(e) {
-    const hasActiveDrag = !!dragState;
-    const hasActiveResize = !!resizeState;
-    if (!hasActiveDrag && !hasActiveResize) return;
-    if (e.touches.length === 0) return;
+  // boot animation on page load
+  animateCount(document.getElementById('lcInteractions'), 0, counts.interactions, 2000);
+  animateCount(document.getElementById('lcConflicts'), 0, counts.conflicts, 1800);
+  animateCount(document.getElementById('lcSessions'), 0, counts.sessions, 1200);
+  animateCount(document.getElementById('lcClarity'), 0, counts.clarity, 1400);
 
-    const touch =
-      activeTouchId == null
-        ? e.touches[0]
-        : getTouchById(e.touches, activeTouchId) || e.touches[0];
+  // tick every 2.5s — numbers keep climbing
+  setInterval(function() {
+    var iDelta = Math.floor(Math.random() * 6) + 2;
+    var cDelta = Math.random() > 0.4 ? 1 : 0;
+    var sDelta = Math.random() > 0.5 ? 1 : -1;
+    var clDelta = Math.random() > 0.6 ? 1 : (Math.random() > 0.8 ? -1 : 0);
 
-    if (!touch) return;
-    e.preventDefault();
-    moveDrag(touch.clientX, touch.clientY);
-    moveResize(touch.clientX, touch.clientY);
-  }
+    counts.interactions += iDelta;
+    counts.conflicts += cDelta;
+    counts.sessions = Math.max(90, Math.min(200, counts.sessions + sDelta));
+    counts.clarity = Math.max(65, Math.min(99, counts.clarity + clDelta));
 
-  function endTouch() {
-    endDrag();
-    endResize();
-    activeTouchId = null;
-  }
-
-  titleBar.addEventListener("pointerdown", (e) => {
-    if (e.target.closest(".tb")) return;
-    if (e.pointerType === "touch" || e.pointerType === "pen" || e.pointerType === "mouse") {
-      e.preventDefault();
-      startDrag(e.clientX, e.clientY);
-      if (e.pointerType === "touch") {
-        activeTouchId = e.pointerId;
-      }
-      if (titleBar.setPointerCapture) {
-        try { titleBar.setPointerCapture(e.pointerId); } catch (_) {}
-      }
-    }
-  });
-
-  titleBar.addEventListener("touchstart", (e) => {
-    if (e.target.closest(".tb")) return;
-    if (e.touches.length !== 1) return;
-    e.preventDefault();
-    const touch = e.touches[0];
-    activeTouchId = touch.identifier;
-    startDrag(touch.clientX, touch.clientY);
-  }, { passive: false });
-
-  document.addEventListener("touchmove", handleTouchMove, { passive: false });
-  document.addEventListener("touchend", endTouch);
-  document.addEventListener("touchcancel", endTouch);
-
-  document.addEventListener("pointermove", (e) => {
-    moveDrag(e.clientX, e.clientY);
-    moveResize(e.clientX, e.clientY);
-  });
-
-  document.addEventListener("pointerup", () => {
-    endDrag();
-    endResize();
-  });
-
-  document.addEventListener("pointercancel", () => {
-    endDrag();
-    endResize();
-  });
-
-  win.addEventListener("mousedown", () => setActive(win));
-  titleBar.addEventListener("dblclick", () => toggleMaximize(win));
-  minBtn.addEventListener("click", (e) => { e.stopPropagation(); minimizeWindow(win); });
-  maxBtn.addEventListener("click", (e) => { e.stopPropagation(); toggleMaximize(win); });
-  closeBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    const id = win.dataset.winId;
-    const btn = document.querySelector(`[data-win-id="${id}"]`);
-    if (btn) btn.remove();
-    openWindows.delete(id);
-    win.remove();
-    if (activeWindow === win) activeWindow = null;
-  });
-
-  resizeHandle.addEventListener("pointerdown", (e) => {
-    e.stopPropagation();
-    if (win.dataset.maximized === "true") return;
-    if (e.pointerType === "touch" || e.pointerType === "pen" || e.pointerType === "mouse") {
-      e.preventDefault();
-      startResize(e.clientX, e.clientY);
-      if (e.pointerType === "touch") {
-        activeTouchId = e.pointerId;
-      }
-    }
-  });
-
-  resizeHandle.addEventListener("touchstart", (e) => {
-    if (e.touches.length !== 1) return;
-    e.preventDefault();
-    const touch = e.touches[0];
-    activeTouchId = touch.identifier;
-    startResize(touch.clientX, touch.clientY);
-  }, { passive: false });
-
-  // document-level touchmove handles both drag and resize once a gesture starts
-}
-
-function makeTaskbarButton(win, title) {
-  const btn = document.createElement("div");
-  btn.className = "taskbar-btn active";
-  btn.dataset.winId = win.dataset.winId;
-  btn.textContent = title;
-  btn.addEventListener("click", () => {
-    if (win.style.display === "none") {
-      restoreWindow(win);
-    } else if (activeWindow === win) {
-      minimizeWindow(win);
-    } else {
-      setActive(win);
-    }
-  });
-  taskbarEl().appendChild(btn);
-  return btn;
-}
-
-function createWindow(title, content, options = {}) {
-  const win = document.createElement("div");
-  const id = `win-${++windowCount}`;
-  win.className = "window active";
-  win.dataset.winId = id;
-  win.style.left = `${options.x ?? 120}px`;
-  win.style.top = `${options.y ?? 80}px`;
-  win.style.width = `${options.width ?? 360}px`;
-  win.style.height = `${options.height ?? 260}px`;
-  win.style.zIndex = ++z;
-
-  win.innerHTML = `
-    <div class="title-bar">
-      <div class="title-left">
-        <img src="${WINDOW_ICON}" alt="" />
-        <span class="title-text">${title}</span>
-      </div>
-      <div class="title-buttons">
-        <div class="tb min" title="Minimize"></div>
-        <div class="tb max" title="Maximize"></div>
-        <div class="tb close" title="Close"></div>
-      </div>
-    </div>
-    <div class="content">
-      ${content}
-    </div>
-    <div class="resize-handle" title="Resize"></div>
-  `;
-
-  desktopEl().appendChild(win);
-  const taskBtn = makeTaskbarButton(win, title);
-  win.dataset.taskbarId = id;
-  openWindows.set(id, win);
-  attachWindowInteractions(win);
-  setActive(win);
-
-  win.addEventListener("focusin", () => setActive(win));
-  win.addEventListener("mousedown", () => setActive(win));
-
-  return { win, taskBtn };
-}
-
-/* ===== START MENU ===== */
-const startButton = document.getElementById("startButton");
-const startMenu = document.getElementById("startMenu");
-
-function toggleStartMenu(force) {
-  const show = typeof force === "boolean" ? force : startMenu.classList.contains("hidden");
-  startMenu.classList.toggle("hidden", !show);
-}
-
-startButton.addEventListener("click", (e) => {
-  e.stopPropagation();
-  toggleStartMenu();
-});
-
-document.addEventListener("click", (e) => {
-  if (!e.target.closest("#startMenu") && !e.target.closest("#startButton")) {
-    toggleStartMenu(false);
-  }
-});
-
-/* ===== NOTIFICATION ===== */
-function notify(text) {
-  const t = document.createElement("div");
-  t.className = "toast";
-  t.innerText = text;
-  desktopEl().appendChild(t);
-  setTimeout(() => t.remove(), 2500);
-}
-
-/* ===== ICON HELPERS ===== */
-function selectIcon(el) {
-  document.querySelectorAll(".icon").forEach((icon) => icon.classList.remove("selected"));
-  el.classList.add("selected");
-}
-
-/* ===== SCENARIOS ===== */
-function scenarioContent(type) {
-  const uid = `scenario-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-  let initial = "";
-  let suggestion = "";
-  let title = "";
-
-  if (type === "dating") {
-    title = "dating_chat.exe";
-    initial = "Her: We should slow down.";
-    suggestion = '"I understand. What are you feeling right now?"';
-  }
-  if (type === "conflict") {
-    title = "couple_conflict.exe";
-    initial = "Partner: You never listen.";
-    suggestion = '"I hear you. Tell me what I missed."';
-  }
-  if (type === "self") {
-    title = "self_awareness.exe";
-    initial = "System: You tend to respond defensively.";
-    suggestion = "Pause before replying.";
-  }
-
-  return {
-    title,
-    html: `
-      <div class="window-grid">
-        <div class="menu-bar"><span>File</span><span>Edit</span><span>View</span><span>Wingit</span><span>Help</span></div>
-        <div class="chat" data-chat="${uid}">${initial}</div>
-        <input type="text" data-msg="${uid}" placeholder="Type a message..." />
-        <div class="button-row">
-          <div class="button" onclick="sendMsg('${uid}','${type}')">Send</div>
-          <div class="button" onclick='applyFix(${JSON.stringify(uid)}, ${JSON.stringify(suggestion)})'>Use Wingit</div>
-        </div>
-        <div class="status-box" data-status="${uid}">Status: ready
-Escalation score: low</div>
-      </div>
-    `
-  };
-}
-
-function openScenario(type) {
-  const s = scenarioContent(type);
-  createWindow(s.title, s.html, { x: 120 + Math.random() * 80, y: 90 + Math.random() * 70, width: 380, height: 330 });
-}
-
-/* ===== CHAT LOGIC ===== */
-function sendMsg(uid, type) {
-  const msg = document.querySelector(`[data-msg="${uid}"]`);
-  const chat = document.querySelector(`[data-chat="${uid}"]`);
-  const status = document.querySelector(`[data-status="${uid}"]`);
-  if (!msg || !chat) return;
-
-  const value = msg.value.trim();
-  if (!value) return;
-
-  chat.innerHTML += `<div>You: ${value}</div>`;
-  msg.value = "";
-
-  let score = "low";
-  const lower = value.toLowerCase();
-  if (lower.includes("why") || lower.includes("always") || lower.includes("never")) {
-    score = "medium";
-    notify("Escalation detected");
-  }
-  if (lower.includes("fine") || lower.includes("whatever")) {
-    score = "high";
-    notify("Escalation risk rising");
-  }
-  if (status) {
-    status.textContent = `Status: ${type}\nEscalation score: ${score}`;
-  }
-}
-
-function applyFix(uid, text) {
-  const chat = document.querySelector(`[data-chat="${uid}"]`);
-  const status = document.querySelector(`[data-status="${uid}"]`);
-  if (!chat) return;
-  chat.innerHTML += `<div><i>Wingit:</i> ${text}</div>`;
-  if (status) {
-    status.textContent = "Status: guided\nEscalation score: reduced";
-  }
-  notify("Better outcome");
-}
-
-/* ===== FOUNDER ===== */
-function openFounder() {
-  createWindow("founder_notes.txt", `
-    <div class="window-grid">
-      <div class="menu-bar"><span>File</span><span>Edit</span><span>Format</span><span>View</span><span>Help</span></div>
-      <div class="window-body">
-        <p>Most people think communication is about words.</p>
-        <p>It isn't.</p>
-        <p>It's about what happens before and after them.</p>
-        <p style="margin-top:12px;">- Sundeep Verma</p>
-      </div>
-    </div>
-  `, { x: 160, y: 110, width: 360, height: 260 });
-}
-
-function openAboutFounder() {
-  createWindow("about_founder.exe", `
-    <div class="window-grid">
-      <div class="menu-bar"><span>File</span><span>Edit</span><span>View</span><span>Help</span></div>
-      <div class="window-body">
-        <p><b>Sundeep Verma</b></p>
-        <p>Founder of Wingit OS, building AI for relational intelligence.</p>
-        <p>Focus areas: product thinking, emotionally aware AI, trust and repair, and systems that help people communicate with more clarity.</p>
-        <p>Point of view: the best AI products do not just answer questions. They improve the quality of human decisions in sensitive moments.</p>
-      </div>
-    </div>
-  `, { x: 190, y: 120, width: 400, height: 280 });
-}
-
-/* ===== WAITLIST ===== */
-function openWaitlist() {
-  createWindow("access_request.exe", `
-    <div class="window-grid">
-      <div class="menu-bar"><span>File</span><span>Edit</span><span>Help</span></div>
-      <div class="window-body">
-        <p>Request access to Wingit OS.</p>
-        <p>Email:</p>
-        <input type="email" placeholder="you@company.com" />
-        <p style="margin-top:8px;">Notes:</p>
-        <textarea placeholder="Tell us what you're building or why you want early access."></textarea>
-        <div class="button-row">
-          <div class="button" onclick="notify('Request queued')">Submit</div>
-        </div>
-      </div>
-    </div>
-  `, { x: 180, y: 140, width: 380, height: 320 });
-}
-
-function openMail() {
-  createWindow("wingit_mail.exe", `
-    <div class="window-grid">
-      <div class="menu-bar"><span>Mail</span><span>Edit</span><span>View</span><span>Message</span></div>
-      <div class="window-body">
-        <p><b>Inbox</b></p>
-        <p>Founder deck request - investor@studio.com</p>
-        <p>Beta access - product@company.com</p>
-        <p>Advisory intro - hello@coach.org</p>
-        <div class="button-row">
-          <div class="button" onclick="notify('Mail synced')">Sync</div>
-          <div class="button" onclick="notify('No new mail')">Check mail</div>
-        </div>
-      </div>
-    </div>
-  `, { x: 220, y: 100, width: 360, height: 260 });
-}
+    document.getElementById('lcInteractions').textContent = counts.interactions.toLocaleString();
+    document.getElementById('lcInteractionsDelta').textContent = '+' + iDelta + ' /min';
+    document.getElementById('lcConflicts').textContent = counts.conflicts.toLocaleString();
+    document.getElementById('lcSessions').textContent = counts.sessions;
+    document.getElementById('lcSessionsDelta').textContent = counts.sessions + ' live now';
+    document.getElementById('lcClarity').textContent = counts.clarity;
+  }, 2500);
 </script>
 
 </body>
